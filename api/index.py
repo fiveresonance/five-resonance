@@ -1,10 +1,11 @@
 """
 api/index.py — Five Resonance API 라우터 (Vercel entrypoint)
-/api/innate       → innate 분석
-/api/compatibility → 궁합 분석
+GET /        → index.html 서빙
+POST /api/innate       → innate 분석
+POST /api/compatibility → 궁합 분석
 """
 from http.server import BaseHTTPRequestHandler
-import json, sys
+import json, sys, os
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
@@ -12,8 +13,21 @@ sys.path.insert(0, str(Path(__file__).parent))
 from innate import handler as InnateHandler
 from compatibility import handler as CompatHandler
 
+# index.html 경로
+ROOT = Path(__file__).parent.parent
+INDEX_HTML = ROOT / "index.html"
+
 
 class handler(BaseHTTPRequestHandler):
+
+    def do_GET(self):
+        """루트 및 정적 파일 서빙"""
+        path = self.path.split('?')[0].rstrip('/')
+
+        if path == '' or path == '/':
+            self._serve_file(INDEX_HTML, 'text/html; charset=utf-8')
+        else:
+            self._json(404, {"error": "Not found"})
 
     def do_POST(self):
         if self.path.rstrip('/') == '/api/innate':
@@ -28,12 +42,22 @@ class handler(BaseHTTPRequestHandler):
         self._cors()
         self.end_headers()
 
+    def _serve_file(self, filepath, content_type):
+        try:
+            content = filepath.read_bytes()
+            self.send_response(200)
+            self.send_header("Content-Type", content_type)
+            self.send_header("Content-Length", len(content))
+            self.end_headers()
+            self.wfile.write(content)
+        except FileNotFoundError:
+            self._json(404, {"error": "File not found"})
+
     def _delegate(self, HandlerClass):
-        """요청을 해당 핸들러로 위임"""
+        import io
         length = int(self.headers.get("Content-Length", 0))
         body_bytes = self.rfile.read(length)
 
-        import io
         inst = HandlerClass.__new__(HandlerClass)
         inst.headers = self.headers
         inst.rfile = io.BytesIO(body_bytes)
@@ -46,7 +70,7 @@ class handler(BaseHTTPRequestHandler):
 
     def _cors(self):
         self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Methods", "POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
 
     def _json(self, code, data):
