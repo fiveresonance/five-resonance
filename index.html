@@ -829,7 +829,7 @@
     const maxVal = Math.max(...Object.values(finalScores));
     document.getElementById('hybrid-bars').innerHTML = Object.entries(finalScores).map(([e,v]) =>
       '<div style="display:flex;align-items:center;gap:10px;">' +
-      '<span style="font-family:'Noto Serif JP',serif;color:'+EL_COLOR[e]+';width:20px;text-align:center">'+KANJI[e]+'</span>' +
+      '<span style="font-family:\'Noto Serif JP\',serif;color:'+EL_COLOR[e]+';width:20px;text-align:center">'+KANJI[e]+'</span>' +
       '<div style="flex:1;height:3px;background:rgba(247,244,238,0.08);border-radius:2px;">' +
       '<div style="height:3px;width:'+Math.round(v/maxVal*100)+'%;background:'+EL_COLOR[e]+';border-radius:2px;transition:width 1s;"></div>' +
       '</div>' +
