@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Five Resonance</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0D0D0D;
+    --paper: #F7F4EE;
+    --gold: #C9A96E;
+    --water: #4A7FA5;
+    --wood: #5A8A5E;
+    --fire: #C4552A;
+    --earth: #A07840;
+    --metal: #8A9BAE;
+    --muted: #6B6B6B;
+    --border: rgba(13,13,13,0.12);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--paper); color:var(--ink); font-family:'Inter',sans-serif; font-weight:300; line-height:1.7; overflow-x:hidden; }
+
+  /* NAV */
+  .lang-bar { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; justify-content:space-between; align-items:center; padding:18px 48px; background:rgba(247,244,238,0.92); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); }
+  .brand-nav { font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:400; letter-spacing:0.12em; }
+  .lang-toggle { display:flex; gap:4px; background:rgba(13,13,13,0.06); border-radius:20px; padding:4px; }
+  .lang-btn { border:none; background:transparent; padding:6px 16px; border-radius:16px; font-size:12px; letter-spacing:0.08em; cursor:pointer; color:var(--muted); transition:all 0.3s; }
+  .lang-btn.active { background:var(--ink); color:var(--paper); }
+
+  /* HERO */
+  .hero { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:120px 24px 80px; }
+  .five-circles { display:flex; gap:20px; margin-bottom:64px; align-items:center; }
+  .circle { width:14px; height:14px; border-radius:50%; animation:breathe 3s ease-in-out infinite; }
+  .circle.water { background:var(--water); animation-delay:0s; }
+  .circle.wood  { background:var(--wood);  animation-delay:0.6s; }
+  .circle.fire  { background:var(--fire);  animation-delay:1.2s; }
+  .circle.earth { background:var(--earth); animation-delay:1.8s; }
+  .circle.metal { background:var(--metal); animation-delay:2.4s; }
+  @keyframes breathe { 0%,100%{transform:scale(1);opacity:0.5;} 50%{transform:scale(1.8);opacity:1;} }
+  .hero-eyebrow { font-size:11px; letter-spacing:0.3em; text-transform:uppercase; color:var(--gold); margin-bottom:24px; }
+  .hero-title { font-family:'Cormorant Garamond',serif; font-size:clamp(48px,8vw,96px); font-weight:300; line-height:1.05; margin-bottom:12px; }
+  .hero-title em { font-style:italic; color:var(--gold); }
+  .hero-sub { font-family:'Cormorant Garamond',serif; font-size:clamp(16px,2.5vw,22px); font-weight:300; font-style:italic; color:var(--muted); margin-bottom:56px; max-width:560px; }
+  .hero-cta { border:1px solid var(--ink); padding:16px 48px; font-size:12px; letter-spacing:0.2em; text-transform:uppercase; color:var(--ink); cursor:pointer; background:transparent; transition:all 0.4s; }
+  .hero-cta:hover { background:var(--ink); color:var(--paper); }
+
+  /* SECTION */
+  .section-label { font-size:10px; letter-spacing:0.35em; text-transform:uppercase; color:var(--gold); margin-bottom:16px; display:block; }
+
+  /* PHILOSOPHY */
+  .philosophy { padding:120px 24px; max-width:720px; margin:0 auto; }
+  .philosophy-lead { font-family:'Cormorant Garamond',serif; font-size:clamp(22px,3.5vw,36px); font-weight:300; font-style:italic; line-height:1.5; text-align:center; margin-bottom:72px; color:var(--ink); }
+  .philosophy-lead em { color:var(--gold); font-style:normal; }
+  .philosophy-blocks { display:grid; gap:48px; }
+  .phil-block { display:grid; grid-template-columns:1px 1fr; gap:32px; align-items:start; }
+  .phil-line { width:1px; background:var(--gold); height:100%; opacity:0.5; }
+  .phil-body {}
+  .phil-label { font-size:10px; letter-spacing:0.3em; text-transform:uppercase; color:var(--gold); margin-bottom:12px; display:block; }
+  .phil-heading { font-family:'Cormorant Garamond',serif; font-size:clamp(18px,2.5vw,26px); font-weight:300; margin-bottom:16px; line-height:1.3; }
+  .phil-text { font-size:13px; color:var(--muted); line-height:2; }
+  .phil-elements { display:flex; flex-direction:column; gap:10px; margin-top:20px; padding:24px 28px; border:1px solid var(--border); }
+  .phil-element-row { display:flex; align-items:baseline; gap:12px; font-size:13px; }
+  .phil-element-row .el-kanji { font-family:'Noto Serif JP',serif; font-size:18px; font-weight:300; min-width:24px; }
+  .phil-element-row .el-desc { color:var(--muted); line-height:1.6; }
+  .philosophy-closing { text-align:center; margin-top:72px; padding-top:48px; border-top:1px solid var(--border); }
+  .philosophy-closing p { font-family:'Cormorant Garamond',serif; font-size:clamp(16px,2vw,22px); font-weight:300; font-style:italic; color:var(--muted); line-height:1.7; }
+
+  /* QUIZ */
+  #quiz-section { padding:100px 24px; max-width:680px; margin:0 auto; }
+  .quiz-header { text-align:center; margin-bottom:60px; }
+  .quiz-header h2 { font-family:'Cormorant Garamond',serif; font-size:clamp(28px,4vw,44px); font-weight:300; line-height:1.2; margin-bottom:12px; }
+  .quiz-header p { font-size:14px; color:var(--muted); }
+  .quiz-progress { display:flex; gap:8px; justify-content:center; margin-bottom:48px; }
+  .progress-dot { width:6px; height:6px; border-radius:50%; background:var(--border); transition:background 0.3s; }
+  .progress-dot.done { background:var(--gold); }
+  .quiz-step { display:none; }
+  .quiz-step.active { display:block; }
+  .quiz-question { font-family:'Cormorant Garamond',serif; font-size:clamp(20px,3vw,30px); font-weight:300; font-style:italic; text-align:center; margin-bottom:36px; line-height:1.4; }
+  .quiz-options { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .quiz-options button:last-child:nth-child(odd) { grid-column:1/-1; }
+  .quiz-opt { border:1px solid var(--border); padding:18px 20px; cursor:pointer; text-align:left; background:transparent; font-family:'Inter',sans-serif; font-size:13px; font-weight:300; color:var(--ink); line-height:1.5; letter-spacing:0.02em; transition:all 0.3s; }
+  .quiz-opt:hover { border-color:var(--ink); background:rgba(13,13,13,0.03); }
+  .quiz-opt.selected { border-color:var(--gold); background:rgba(201,169,110,0.06); }
+
+  /* RESULT */
+  #result-section { display:none; padding:100px 24px; max-width:640px; margin:0 auto; text-align:center; }
+  #result-section.show { display:block; }
+  .result-element-circle { width:120px; height:120px; border-radius:50%; margin:0 auto 24px; display:flex; align-items:center; justify-content:center; animation:pulse-result 2s ease-in-out infinite; }
+  @keyframes pulse-result { 0%,100%{box-shadow:0 0 0 0 rgba(0,0,0,0.1);} 50%{box-shadow:0 0 0 20px rgba(0,0,0,0);} }
+  .result-kanji { font-family:'Noto Serif JP',serif; font-size:48px; font-weight:300; margin-bottom:8px; }
+  .result-name { font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:300; margin-bottom:24px; }
+  .result-desc { font-size:14px; color:var(--muted); max-width:480px; margin:0 auto 32px; line-height:1.9; }
+  .result-explain { max-width:480px; margin:0 auto 32px; padding:24px 28px; border:1px solid var(--border); text-align:left; font-size:13px; line-height:1.9; color:var(--muted); }
+  .result-secondary { max-width:480px; margin:0 auto 48px; padding:28px 32px; border:1px solid var(--border); text-align:center; }
+  .result-actions { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; margin-top:8px; }
+
+  /* BUTTONS */
+  .btn-primary { background:var(--ink); color:var(--paper); border:1px solid var(--ink); padding:16px 40px; font-size:12px; letter-spacing:0.2em; text-transform:uppercase; cursor:pointer; text-decoration:none; transition:all 0.3s; display:inline-block; }
+  .btn-secondary { background:transparent; color:var(--ink); border:1px solid var(--border); padding:16px 40px; font-size:12px; letter-spacing:0.2em; text-transform:uppercase; cursor:pointer; transition:all 0.3s; display:inline-block; text-decoration:none; }
+  .btn-secondary:hover { border-color:var(--ink); }
+  .btn-gold { border:1px solid var(--gold); color:var(--gold); padding:16px 48px; font-size:12px; letter-spacing:0.2em; text-transform:uppercase; cursor:pointer; background:transparent; display:inline-block; transition:all 0.3s; }
+  .btn-gold:hover { background:var(--gold); color:var(--ink); }
+
+  /* ELEMENTS GRID */
+  section.elements { padding:100px 24px; max-width:900px; margin:0 auto; }
+  .elements-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:2px; margin-top:48px; }
+  .element-card { padding:40px 16px; text-align:center; border:1px solid var(--border); }
+  .element-card .kanji { font-family:'Noto Serif JP',serif; font-size:32px; font-weight:300; margin-bottom:12px; display:block; }
+  .element-card .ename { font-family:'Cormorant Garamond',serif; font-size:15px; font-weight:400; letter-spacing:0.05em; margin-bottom:6px; display:block; }
+  .element-card .dot { width:8px; height:8px; border-radius:50%; margin:0 auto; }
+
+  /* SAJU */
+  .saju-teaser { background:var(--ink); color:var(--paper); padding:100px 48px; text-align:center; margin-top:80px; }
+  .saju-teaser h2 { font-family:'Cormorant Garamond',serif; font-size:clamp(28px,4vw,48px); font-weight:300; margin-bottom:20px; line-height:1.3; }
+  .saju-teaser p { font-size:14px; color:rgba(247,244,238,0.6); max-width:480px; margin:0 auto 40px; line-height:1.8; }
+
+  /* FOOTER */
+  footer { padding:48px; text-align:center; border-top:1px solid var(--border); font-size:11px; letter-spacing:0.15em; color:var(--muted); }
+
+  @media (max-width:600px) {
+    .lang-bar { padding:16px 24px; }
+    .quiz-options { grid-template-columns:1fr; }
+    .elements-grid { grid-template-columns:repeat(3,1fr); }
+    .saju-teaser { padding:60px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="lang-bar">
+  <span class="brand-nav">Five Resonance</span>
+  <div class="lang-toggle">
+    <button class="lang-btn active" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" onclick="setLang('ko')">한국어</button>
+    <button class="lang-btn" onclick="setLang('jp')">日本語</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="five-circles">
+    <div class="circle water"></div>
+    <div class="circle wood"></div>
+    <div class="circle fire"></div>
+    <div class="circle earth"></div>
+    <div class="circle metal"></div>
+  </div>
+  <p class="hero-eyebrow" data-en="Inspired by the Five Elements" data-ko="음양오행의 철학에서 탄생한 음악" data-jp="五行の哲学から生まれた音楽">Inspired by the Five Elements</p>
+  <h1 class="hero-title" data-en="Find your<br><em>resonance</em>" data-ko="나만의<br><em>공명</em>을 찾아서" data-jp="あなたの<br><em>共鳴</em>を見つける">Find your<br><em>resonance</em></h1>
+  <p class="hero-sub" data-en="Music designed for the energy you carry — and the energy you need." data-ko="내가 가진 기운과, 내게 필요한 기운을 위해 설계된 음악." data-jp="あなたが持つエネルギーと、あなたに必要なエネルギーのために設計された音楽。">Music designed for the energy you carry — and the energy you need.</p>
+  <button class="hero-cta" onclick="scrollToQuiz()" data-en="Find Today's Resonance" data-ko="오늘의 공명 찾기" data-jp="今日の共鳴を見つける">Find Today's Resonance</button>
+</section>
+
+<!-- PHILOSOPHY -->
+<section class="philosophy">
+  <p class="philosophy-lead"
+     data-en="The right music exists.<br>But <em>how</em> do you find it?"
+     data-ko="맞는 음악은 존재합니다.<br>그런데 <em>어떻게</em> 찾을 수 있을까요?"
+     data-jp="あなたに合う音楽は、存在する。<br>でも、<em>どうやって</em>見つければいい？">
+    The right music exists.<br>But <em>how</em> do you find it?
+  </p>
+
+  <div class="philosophy-blocks">
+
+    <!-- Block 1 -->
+    <div class="phil-block">
+      <div class="phil-line"></div>
+      <div class="phil-body">
+        <span class="phil-label"
+          data-en="The Problem" data-ko="문제" data-jp="問いかけ">The Problem</span>
+        <h3 class="phil-heading"
+          data-en="Sleep music that keeps you awake.<br>Focus music that distracts."
+          data-ko="잠들려고 틀었는데 오히려 눈이 떠지는 음악.<br>집중하려고 틀었는데 오히려 산만해지는 음악."
+          data-jp="眠れるはずが、目が覚めてしまう。<br>集中するはずが、気が散ってしまう。">
+          Sleep music that keeps you awake.<br>Focus music that distracts.
+        </h3>
+        <p class="phil-text"
+          data-en="It's not that the music is wrong. It's that the selection method is incomplete. We don't change our playlists — we change our state. Every day, your inner energy is different. Overthinking. Stuck. Cold inside. Unsteady. Tangled. These are not the same fatigue."
+          data-ko="음악이 나쁜 게 아닙니다. 선택하는 방법이 부족한 것입니다. 우리는 플레이리스트를 바꾸는 게 아니라, 상태가 달라집니다. 오늘의 나는 어제와 다릅니다. 생각이 멈추지 않는 날, 시작할 힘이 없는 날, 온기가 필요한 날, 중심이 흔들리는 날, 머릿속이 뒤엉킨 날 — 이것들은 모두 다른 상태입니다."
+          data-jp="音楽が悪いのではありません。選び方が足りないのです。私たちはプレイリストを変えるのではなく、状態が変わるのです。今日のあなたは、昨日と違う。考えが止まらない日、やる気が出ない日、心が冷えている日、気持ちが揺れている日、頭がこんがらがっている日——これらはすべて、異なる状態です。">
+          It's not that the music is wrong. It's that the selection method is incomplete. Every day, your inner energy shifts. Overthinking. Stuck. Cold inside. Unsteady. Tangled. These are not the same fatigue.
+        </p>
+      </div>
+    </div>
+
+    <!-- Block 2 -->
+    <div class="phil-block">
+      <div class="phil-line"></div>
+      <div class="phil-body">
+        <span class="phil-label"
+          data-en="The Answer" data-ko="2000년의 답" data-jp="2000年前の答え">The Answer</span>
+        <h3 class="phil-heading"
+          data-en="Eastern medicine had a language for this.<br>Two thousand years ago."
+          data-ko="동양의학에는 이미 이것을 기술하는 언어가 있었습니다.<br>2000년 전에."
+          data-jp="東洋医学には、これを記述する言語があった。<br>2000年前に。">
+          Eastern medicine had a language for this.<br>Two thousand years ago.
+        </h3>
+        <p class="phil-text"
+          data-en="The Five Elements — Wood, Fire, Earth, Metal, Water — are not personality types. They describe the state you are in today, and what you are missing."
+          data-ko="오행 — 木·火·土·金·水 — 은 성격 유형이 아닙니다. 오늘의 당신이 어떤 상태인지, 무엇이 부족한지를 기술하는 언어입니다."
+          data-jp="五行——木・火・土・金・水——は性格タイプではありません。今日のあなたがどんな状態にあるか、何が足りないかを記述する言語です。">
+          The Five Elements — Wood, Fire, Earth, Metal, Water — are not personality types. They describe the state you are in today, and what you are missing.
+        </p>
+        <div class="phil-elements">
+          <div class="phil-element-row">
+            <span class="el-kanji" style="color:var(--water)">水</span>
+            <span class="el-desc" data-en="Water — deep rest, stillness, release" data-ko="수(水) — 깊은 휴식, 고요, 내려놓음" data-jp="水（すい）— 深い休息、静けさ、手放し">Water — deep rest, stillness, release</span>
+          </div>
+          <div class="phil-element-row">
+            <span class="el-kanji" style="color:var(--wood)">木</span>
+            <span class="el-desc" data-en="Wood — growth, momentum, forward motion" data-ko="목(木) — 성장, 전진, 생명력" data-jp="木（もく）— 成長、前進、生命力">Wood — growth, momentum, forward motion</span>
+          </div>
+          <div class="phil-element-row">
+            <span class="el-kanji" style="color:var(--fire)">火</span>
+            <span class="el-desc" data-en="Fire — warmth, vitality, connection" data-ko="화(火) — 온기, 활력, 연결" data-jp="火（か）— 温もり、活力、つながり">Fire — warmth, vitality, connection</span>
+          </div>
+          <div class="phil-element-row">
+            <span class="el-kanji" style="color:var(--earth)">土</span>
+            <span class="el-desc" data-en="Earth — stability, grounding, centre" data-ko="토(土) — 안정, 중심, 안착" data-jp="土（ど）— 安定、安着、中心">Earth — stability, grounding, centre</span>
+          </div>
+          <div class="phil-element-row">
+            <span class="el-kanji" style="color:var(--metal)">金</span>
+            <span class="el-desc" data-en="Metal — clarity, precision, clear mind" data-ko="금(金) — 명료함, 명석함, 맑은 의식" data-jp="金（きん）— 明晰、輪郭、澄んだ意識">Metal — clarity, precision, clear mind</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Block 3 -->
+    <div class="phil-block">
+      <div class="phil-line"></div>
+      <div class="phil-body">
+        <span class="phil-label"
+          data-en="The Design" data-ko="음향 설계" data-jp="音響設計">The Design</span>
+        <h3 class="phil-heading"
+          data-en="Each element has its own sonic shape.<br>We found it."
+          data-ko="각 원소에는 고유의 음향 형태가 있습니다.<br>우리는 그것을 찾아냈습니다."
+          data-jp="それぞれの行には、固有の「音のかたち」がある。<br>私たちはそれを見つけた。">
+          Each element has its own sonic shape.<br>We found it.
+        </h3>
+        <p class="phil-text"
+          data-en="Using spectral analysis and rhythm research, we identified acoustic signatures unique to each element — brightness, rhythmic regularity, dynamic shape, directionality. Five Resonance is not a mood playlist. It is music designed from a 2,000-year-old map of human states — refined for the way you listen today."
+          data-ko="스펙트럼 분석과 리듬 연구를 통해, 각 원소에 고유한 음향 특성을 규명했습니다 — 음색의 밝기, 리듬의 규칙성, 다이나믹의 형태, 방향성. Five Resonance는 무드 플레이리스트가 아닙니다. 2000년의 인간 상태 지도에서 설계된 음악입니다."
+          data-jp="スペクトル分析とリズム研究を通じて、各元素に固有の音響特性を特定しました——音の明暗、リズムの規則性、ダイナミクスの形、方向性。Five Resonanceはムードプレイリストではありません。2000年の人間の状態地図から設計された音楽です。">
+          Using spectral and rhythm analysis, we identified acoustic signatures unique to each element. Five Resonance is not a mood playlist. It is music designed from a 2,000-year-old map of human states — refined for the way you listen today.
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="philosophy-closing">
+    <p data-en="Not fortune-telling. Not therapy.<br>Just the right sound, for today's you."
+       data-ko="점술이 아닙니다. 처방도 아닙니다.<br>다만, 오늘의 당신에게 맞는 소리를."
+       data-jp="占いではない。処方でもない。<br>ただ、今日のあなたに合った音を。">
+      Not fortune-telling. Not therapy.<br>Just the right sound, for today's you.
+    </p>
+  </div>
+</section>
+
+<!-- QUIZ -->
+<div id="quiz-section">
+  <div class="quiz-header">
+    <span class="section-label" data-en="Today's Resonance" data-ko="오늘의 공명" data-jp="今日の共鳴">Today's Resonance</span>
+    <h2 data-en="What do you need right now?" data-ko="지금 당신에게 필요한 것은?" data-jp="今、あなたに必要なものは？">What do you need right now?</h2>
+    <p data-en="Four questions to find today's resonance." data-ko="네 가지 질문으로 오늘의 공명을 찾아드립니다." data-jp="4つの質問で、今日の共鳴を見つけます。">Four questions to find today's resonance.</p>
+  </div>
+
+  <div class="quiz-progress">
+    <div class="progress-dot" id="dot-0"></div>
+    <div class="progress-dot" id="dot-1"></div>
+    <div class="progress-dot" id="dot-2"></div>
+    <div class="progress-dot" id="dot-3"></div>
+  </div>
+
+  <!-- Q1 -->
+  <div class="quiz-step active" id="step-0">
+    <p class="quiz-question" data-en="Right now..." data-ko="지금 나는..." data-jp="今の私は…">Right now...</p>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="selectOpt(0,{water:3,metal:1},this)">
+        <span data-en="My mind won't stop" data-ko="생각이 멈추지 않는다" data-jp="考えが止まらない">My mind won't stop</span>
+      </button>
+      <button class="quiz-opt" onclick="selectOpt(0,{wood:3,water:1},this)">
+        <span data-en="I can't get started" data-ko="시작할 힘이 없다" data-jp="やる気が出ない">I can't get started</span>
+      </button>
+      <button class="quiz-opt" onclick="selectOpt(0,{fire:3,wood:1},this)">
+        <span data-en="I just can't seem to get going" data-ko="왠지 힘이 나지 않는다" data-jp="なんとなく元気が出ない">I feel cold inside</span>
+      </button>
+      <button class="quiz-opt" onclick="selectOpt(0,{earth:3,fire:1},this)">
+        <span data-en="I feel unsteady" data-ko="중심이 흔들린다" data-jp="気持ちが揺れている">I feel unsteady</span>
+      </button>
+      <button class="quiz-opt" onclick="selectOpt(0,{metal:3,earth:1},this)">
+        <span data-en="My head is tangled" data-ko="머릿속이 뒤엉켜 있다" data-jp="頭がこんがらがっている">My head is tangled</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="quiz-step" id="step-1">
+    <p class="quiz-question" data-en="What was hardest today?" data-ko="오늘 가장 힘들었던 것은?" data-jp="今日、いちばんつらかったことは？">What was hardest today?</p>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="selectOpt(1,{water:3,metal:1},this)">
+        <span data-en="Something I couldn't let go of" data-ko="계속 신경 쓰이는 일이 있었다" data-jp="ずっと引っかかることがあった">Something I couldn't let go of</span>
+      </button>
+      <button class="quiz-opt" onclick="selectOpt(1,{wood:3,water:1},this)">
+        <span data-en="Nothing went my way" data-ko="일이 뜻대로 풀리지 않았다" data-jp="思い通りに進まなかった">Nothing went my way</span>
+      </button>
+      <button class="quiz-opt" onclick="selectOpt(1,{fire:3,wood:1},this)">
+        <span data-en="People wore me out" data-ko="사람들과의 관계에 지쳤다" data-jp="人との関わりに疲れた">People wore me out</span>
+      </button>
+      <button class="quiz-opt" onclick="selectOpt(1,{earth:3,fire:1},this)">
+        <span data-en="Everything felt uncertain" data-ko="불안하고 막막했다" data-jp="先が見えず不安だった">Everything felt uncertain</span>
+      </button>
+      <button class="quiz-opt" onclick="selectOpt(1,{metal:3,earth:1},this)">
+        <span data-en="Too many things to keep track of" data-ko="신경 쓸 일이 너무 많았다" data-jp="気を配ることが多すぎた">Too many things to keep track of</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="quiz-step" id="step-2">
+    <p class="quiz-question" data-en="After listening, I want..." data-ko="음악을 듣고 어떻게 되고 싶나요?" data-jp="聴いたあと、どうなりたいですか？">After listening, I want...</p>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="selectOpt(2,{water:3,metal:1},this)">
+        <span data-en="To rest deeply" data-ko="깊게 쉬고 싶다" data-jp="深く休みたい">To rest deeply</span>
+      </button>
+      <button class="quiz-opt" onclick="selectOpt(2,{wood:3,water:1},this)">
+        <span data-en="To start moving again" data-ko="다시 움직이고 싶다" data-jp="また動き出したい">To start moving again</span>
+      </button>
+      <button class="quiz-opt" onclick="selectOpt(2,{fire:3,wood:1},this)">
+        <span data-en="To switch up my mood" data-ko="기분을 바꾸고 싶다" data-jp="気持ちを切り替えたい">To feel warm again</span>
+      </button>
+      <button class="quiz-opt" onclick="selectOpt(2,{earth:3,fire:1},this)">
+        <span data-en="To feel settled" data-ko="안정되고 싶다" data-jp="落ち着きたい">To feel settled</span>
+      </button>
+      <button class="quiz-opt" onclick="selectOpt(2,{metal:3,earth:1},this)">
+        <span data-en="To feel clear" data-ko="맑아지고 싶다" data-jp="すっきりしたい">To feel clear</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="quiz-step" id="step-3">
+    <p class="quiz-question" data-en="Which feels most comforting?" data-ko="어떤 느낌이 가장 편안한가요?" data-jp="今、いちばん心地よく感じるのは？">Which feels most comforting?</p>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="selectOpt(3,{water:3,metal:1},this)">
+        <span data-en="Still water" data-ko="잔잔한 물결" data-jp="静かな水面">Still water</span>
+      </button>
+      <button class="quiz-opt" onclick="selectOpt(3,{wood:3,water:1},this)">
+        <span data-en="Morning air in a forest" data-ko="아침 숲의 공기" data-jp="朝の森の空気">Morning air in a forest</span>
+      </button>
+      <button class="quiz-opt" onclick="selectOpt(3,{fire:3,wood:1},this)">
+        <span data-en="Gentle warmth" data-ko="따뜻한 온기" data-jp="やわらかな温もり">Gentle warmth</span>
+      </button>
+      <button class="quiz-opt" onclick="selectOpt(3,{earth:3,fire:1},this)">
+        <span data-en="Solid ground" data-ko="단단한 땅" data-jp="踏みしめる土">Solid ground</span>
+      </button>
+      <button class="quiz-opt" onclick="selectOpt(3,{metal:3,earth:1},this)">
+        <span data-en="Clear cold wind" data-ko="차가운 맑은 바람" data-jp="澄んだ冷たい風">Clear cold wind</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div id="result-section">
+  <span class="section-label" data-en="Today's Resonance" data-ko="오늘의 공명" data-jp="今日の共鳴">Today's Resonance</span>
+
+  <div id="result-circle" class="result-element-circle"></div>
+  <div id="result-kanji" class="result-kanji"></div>
+  <div id="result-name" class="result-name"></div>
+  <div id="result-explain" class="result-explain"></div>
+  <p id="result-desc" class="result-desc"></p>
+  <a id="result-yt" href="#" target="_blank" class="btn-primary" style="margin-bottom:40px;">Listen Now</a>
+
+  <div class="result-secondary">
+    <span class="section-label" data-en="Secondary Harmony" data-ko="보조 공명" data-jp="セカンダリー共鳴">Secondary Harmony</span>
+    <div id="secondary-kanji" style="font-family:'Noto Serif JP',serif;font-size:36px;font-weight:300;margin:8px 0;"></div>
+    <div id="secondary-name" style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;margin-bottom:16px;"></div>
+    <a id="secondary-yt" href="#" target="_blank" class="btn-secondary" style="font-size:11px;">Also listen</a>
+  </div>
+
+  <div class="result-actions">
+    <button class="btn-secondary" onclick="resetQuiz()" data-en="Try Again" data-ko="다시 하기" data-jp="もう一度">Try Again</button>
+  </div>
+</div>
+
+<!-- FIVE ELEMENTS -->
+<section class="elements">
+  <div style="text-align:center;">
+    <span class="section-label" data-en="The Five Elements" data-ko="오행이란" data-jp="五行について">The Five Elements</span>
+    <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(28px,4vw,44px);font-weight:300;line-height:1.3;margin-bottom:16px;"
+      data-en="Each element carries<br>a different resonance"
+      data-ko="각각의 오행에는<br>다른 공명이 깃들어 있습니다"
+      data-jp="それぞれの行に、<br>異なる共鳴が宿る">Each element carries<br>a different resonance</h2>
+    <p style="font-size:14px;color:var(--muted);max-width:500px;margin:0 auto;"
+      data-en="Rooted in five-thousand-year-old philosophy. Designed for the way you listen today."
+      data-ko="수천 년의 철학에 뿌리를 두고, 오늘을 사는 당신의 귀를 위해 설계되었습니다."
+      data-jp="五千年の哲学に根ざし、今のあなたの聴き方のために設計された。">Rooted in five-thousand-year-old philosophy. Designed for the way you listen today.</p>
+  </div>
+  <div class="elements-grid">
+    <div class="element-card"><span class="kanji" style="color:var(--water)">水</span><span class="ename">Water</span><div class="dot" style="background:var(--water)"></div></div>
+    <div class="element-card"><span class="kanji" style="color:var(--wood)">木</span><span class="ename">Wood</span><div class="dot" style="background:var(--wood)"></div></div>
+    <div class="element-card"><span class="kanji" style="color:var(--fire)">火</span><span class="ename">Fire</span><div class="dot" style="background:var(--fire)"></div></div>
+    <div class="element-card"><span class="kanji" style="color:var(--earth)">土</span><span class="ename">Earth</span><div class="dot" style="background:var(--earth)"></div></div>
+    <div class="element-card"><span class="kanji" style="color:var(--metal)">金</span><span class="ename">Metal</span><div class="dot" style="background:var(--metal)"></div></div>
+  </div>
+</section>
+
+<!-- INNATE ANALYSIS -->
+<div class="saju-teaser" id="innate-section">
+  <span class="section-label" style="color:var(--gold)" data-en="Born Resonance" data-ko="타고난 결" data-jp="生まれながらの共鳴">Born Resonance</span>
+  <h2 data-en="Your birth carries a map.<br>We'll help you read it."
+      data-ko="태어난 날에는 지도가 담겨 있습니다.<br>그것을 함께 읽어드리겠습니다."
+      data-jp="あなたの生年月日には、<br>地図が宿っている。">Your birth carries a map.<br>We'll help you read it.</h2>
+  <p data-en="Enter your date and birth hour for a precise Five Elements reading."
+     data-ko="생년월일과 태어난 시를 입력하면 정밀한 오행 분석을 받을 수 있습니다."
+     data-jp="生年月日と生まれた時間を入力して、あなたの五行を知る。">Enter your date and birth hour for a precise Five Elements reading.</p>
+
+  <!-- 입력 폼 -->
+  <div id="innate-form" style="margin:40px auto 0;max-width:400px;">
+    <div style="display:grid;gap:12px;">
+      <input type="date" id="innate-birth" style="padding:14px 18px;background:rgba(247,244,238,0.08);border:1px solid rgba(247,244,238,0.25);color:var(--paper);font-size:14px;letter-spacing:0.05em;width:100%;border-radius:2px;" />
+      <select id="innate-hour" style="padding:14px 18px;background:rgba(13,13,13,0.85);border:1px solid rgba(247,244,238,0.25);color:var(--paper);font-size:13px;letter-spacing:0.05em;width:100%;border-radius:2px;">
+        <option value="-1" data-en="Birth hour unknown" data-ko="태어난 시 모름" data-jp="生まれた時間不明">Birth hour unknown</option>
+        <option value="0">子時 00:00–01:00</option><option value="1">丑時 01:00–03:00</option>
+        <option value="3">寅時 03:00–05:00</option><option value="5">卯時 05:00–07:00</option>
+        <option value="7">辰時 07:00–09:00</option><option value="9">巳時 09:00–11:00</option>
+        <option value="11">午時 11:00–13:00</option><option value="13">未時 13:00–15:00</option>
+        <option value="15">申時 15:00–17:00</option><option value="17">酉時 17:00–19:00</option>
+        <option value="19">戌時 19:00–21:00</option><option value="21">亥時 21:00–23:00</option>
+      </select>
+      <button class="btn-gold" onclick="runInnate()" id="innate-btn"
+        data-en="Reveal my Five Elements" data-ko="내 오행 보기" data-jp="私の五行を見る">
+        Reveal my Five Elements
+      </button>
+    </div>
+  </div>
+
+  <!-- 로딩 -->
+  <div id="innate-loading" style="display:none;margin-top:40px;font-size:13px;letter-spacing:0.15em;color:rgba(247,244,238,0.5);" data-en="Calculating your resonance…" data-ko="오행 분석 중…" data-jp="五行を解析中…">Calculating your resonance…</div>
+
+  <!-- 결과 카드 -->
+  <div id="innate-result" style="display:none;margin-top:48px;max-width:520px;margin-left:auto;margin-right:auto;text-align:left;border:1px solid rgba(247,244,238,0.2);padding:36px;background:rgba(0,0,0,0.3);">
+    <div id="ir-type" style="font-size:11px;letter-spacing:0.3em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;"></div>
+    <div id="ir-headline" style="font-family:'Cormorant Garamond',serif;font-size:clamp(20px,3vw,30px);font-weight:300;color:var(--paper);margin-bottom:20px;line-height:1.4;"></div>
+    <div id="ir-primary" style="font-size:13px;color:rgba(247,244,238,0.75);line-height:1.9;margin-bottom:16px;"></div>
+    <div id="ir-balance" style="font-size:12px;color:rgba(247,244,238,0.5);line-height:1.8;margin-bottom:24px;border-top:1px solid rgba(247,244,238,0.1);padding-top:16px;"></div>
+    <div id="ir-music" style="font-size:12px;letter-spacing:0.08em;color:var(--gold);"></div>
+    <!-- 오행 분포 바 -->
+    <div id="ir-dist" style="margin-top:28px;display:grid;gap:8px;"></div>
+    <!-- Born + Today 결합 카드 (퀴즈 완료 후 표시) -->
+    <div id="hybrid-card" style="display:none;margin-top:28px;padding:24px 28px;border:1px solid rgba(201,169,110,0.3);background:rgba(201,169,110,0.05);">
+      <div style="font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;"
+        data-en="YOUR SOUND FOCUS TODAY" data-ko="오늘의 사운드 포커스" data-jp="今日のサウンドフォーカス">YOUR SOUND FOCUS TODAY</div>
+      <div id="hybrid-headline" style="font-family:'Cormorant Garamond',serif;font-size:clamp(16px,2.5vw,22px);font-weight:300;color:rgba(247,244,238,0.95);margin-bottom:12px;line-height:1.5;"></div>
+      <div id="hybrid-direction" style="font-size:12px;letter-spacing:0.06em;color:var(--gold);margin-bottom:16px;"></div>
+      <div id="hybrid-bars" style="display:grid;gap:6px;"></div>
+      <div style="margin-top:16px;font-size:11px;color:rgba(247,244,238,0.3);"
+        data-en="Born structure 30% · Today's state 70%"
+        data-ko="타고난 구조 30% · 오늘의 상태 70%"
+        data-jp="生まれの構造 30% · 今日の状態 70%">Born structure 30% · Today's state 70%</div>
+    </div>
+    <!-- 궁합 CTA -->
+    <div style="margin-top:32px;text-align:center;">
+      <button class="btn-gold" onclick="showCompatSection()" style="font-size:11px;"
+        data-en="Check relationship resonance →" data-ko="관계 공명 보기 →" data-jp="関係の共鳴を見る →">
+        Check relationship resonance →
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- COMPATIBILITY -->
+<div id="compat-section" style="display:none;background:var(--ink);color:var(--paper);padding:100px 48px;text-align:center;margin-top:2px;">
+  <span class="section-label" style="color:var(--gold)" data-en="Relationship Resonance" data-ko="관계 공명" data-jp="関係の共鳴">Relationship Resonance</span>
+  <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(24px,4vw,44px);font-weight:300;margin-bottom:20px;line-height:1.3;"
+    data-en="How do two resonances meet?"
+    data-ko="두 공명은 어떻게 만나는가"
+    data-jp="ふたつの共鳴は、どう出会うのか">How do two resonances meet?</h2>
+
+  <div style="max-width:400px;margin:40px auto 0;display:grid;gap:12px;">
+    <input type="date" id="compat-birth" style="padding:14px 18px;background:rgba(247,244,238,0.08);border:1px solid rgba(247,244,238,0.25);color:var(--paper);font-size:14px;width:100%;border-radius:2px;" placeholder="Partner's birth date"/>
+    <select id="compat-hour" style="padding:14px 18px;background:rgba(13,13,13,0.85);border:1px solid rgba(247,244,238,0.25);color:var(--paper);font-size:13px;width:100%;border-radius:2px;">
+      <option value="-1" data-en="Birth hour unknown" data-ko="태어난 시 모름" data-jp="生まれた時間不明">Birth hour unknown</option>
+      <option value="0">子時 00:00–01:00</option><option value="1">丑時 01:00–03:00</option>
+      <option value="3">寅時 03:00–05:00</option><option value="5">卯時 05:00–07:00</option>
+      <option value="7">辰時 07:00–09:00</option><option value="9">巳時 09:00–11:00</option>
+      <option value="11">午時 11:00–13:00</option><option value="13">未時 13:00–15:00</option>
+      <option value="15">申時 15:00–17:00</option><option value="17">酉時 17:00–19:00</option>
+      <option value="19">戌時 19:00–21:00</option><option value="21">亥時 21:00–23:00</option>
+    </select>
+    <button class="btn-gold" onclick="runCompat()" id="compat-btn"
+      data-en="Read our resonance" data-ko="우리의 공명 보기" data-jp="ふたりの共鳴を読む">
+      Read our resonance
+    </button>
+  </div>
+
+  <div id="compat-loading" style="display:none;margin-top:40px;font-size:13px;letter-spacing:0.15em;color:rgba(247,244,238,0.5);" data-en="Reading the resonance between you…" data-ko="두 공명 분석 중…" data-jp="ふたりの共鳴を解析中…">Reading the resonance between you…</div>
+
+  <div id="compat-result" style="display:none;margin-top:48px;max-width:560px;margin-left:auto;margin-right:auto;text-align:left;border:1px solid rgba(247,244,238,0.2);padding:36px;background:rgba(0,0,0,0.3);">
+    <div id="cr-type" style="font-size:11px;letter-spacing:0.3em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;"></div>
+    <div id="cr-headline" style="font-family:'Cormorant Garamond',serif;font-size:clamp(18px,2.5vw,26px);font-weight:300;color:var(--paper);margin-bottom:20px;line-height:1.4;"></div>
+    <div id="cr-desc" style="font-size:13px;color:rgba(247,244,238,0.75);line-height:1.9;margin-bottom:16px;"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+      <div>
+        <div style="font-size:10px;letter-spacing:0.2em;color:var(--gold);margin-bottom:8px;" data-en="HARMONY" data-ko="조화" data-jp="調和">HARMONY</div>
+        <div id="cr-harmony" style="font-size:12px;color:rgba(247,244,238,0.6);line-height:1.8;"></div>
+      </div>
+      <div>
+        <div style="font-size:10px;letter-spacing:0.2em;color:var(--gold);margin-bottom:8px;" data-en="TENSION" data-ko="긴장" data-jp="緊張">TENSION</div>
+        <div id="cr-tension" style="font-size:12px;color:rgba(247,244,238,0.6);line-height:1.8;"></div>
+      </div>
+    </div>
+    <div id="cr-music" style="font-size:12px;letter-spacing:0.08em;color:var(--gold);border-top:1px solid rgba(247,244,238,0.1);padding-top:16px;"></div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;margin-bottom:12px;letter-spacing:0.05em;">Five Resonance</p>
+  <p data-en="Designed for mindful listening. Inspired by the Five Elements."
+     data-ko="오행의 철학에서 영감을 받은, 마음을 위한 음악."
+     data-jp="五行の哲学にインスパイアされた、マインドフルなリスニングのために。">Designed for mindful listening. Inspired by the Five Elements.</p>
+</footer>
+
+<script>
+  // ── STATE
+  let currentLang = 'en';
+  let scores = { water:0, wood:0, fire:0, earth:0, metal:0 };
+  let selectedLabels = [];
+  let currentStep = 0;
+  const totalSteps = 4;
+
+  // ── LANGUAGE
+  function setLang(lang) {
+    currentLang = lang;
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('.lang-btn[onclick="setLang(\'' + lang + '\')"]').classList.add('active');
+    document.querySelectorAll('[data-en]').forEach(el => {
+      const text = el.getAttribute('data-' + lang);
+      if (text) el.innerHTML = text;
+    });
+  }
+
+  function scrollToQuiz() {
+    document.getElementById('quiz-section').scrollIntoView({ behavior:'smooth', block:'start' });
+  }
+
+  // ── 일진(日干支) → 오행.  manse.py 와 동일한 JDN 공식.
+  //    검증: 2026-07-25 庚子 / 2026-08-07 癸丑 / 2026-11-07 乙酉
+  //    시간대는 JST 고정 (일본 대상 서비스)
+  function todayDayElement() {
+    var now = new Date();
+    var jst = new Date(now.getTime() + (now.getTimezoneOffset() * 60000) + (9 * 3600000));
+    var y = jst.getFullYear(), m = jst.getMonth() + 1, d = jst.getDate();
+    var a = Math.floor((14 - m) / 12);
+    var yy = y + 4800 - a, mm = m + 12 * a - 3;
+    var jdn = d + Math.floor((153 * mm + 2) / 5) + 365 * yy
+            + Math.floor(yy / 4) - Math.floor(yy / 100) + Math.floor(yy / 400) - 32045;
+    var i = (jdn + 49) % 60;
+    // 천간 甲乙(木) 丙丁(火) 戊己(土) 庚辛(金) 壬癸(水)
+    return ['wood','wood','fire','fire','earth','earth','metal','metal','water','water'][i % 10];
+  }
+
+  // ── DATA
+  const elementData = {
+    water: {
+      kanji:'水', color:'#4A7FA5',
+      nameEn:'Today, you need Water.', nameKo:'오늘 당신에겐 수(水)의 고요가 필요합니다', nameJp:'今日のあなたには、水の静けさが必要です',
+      descEn:'To cool down your overheated mind. Let the music submerge you into deep, restorative stillness.',
+      descKo:'생각과 소음으로 과부하된 머리를 깊은 수심 속으로 가라앉혀 드립니다. 아무것도 하지 않아도 되는 고요 속에서 진짜 휴식을 시작하세요.',
+      descJp:'思考と雑音で疲れた頭を、深い水底へと沈めます。何もしなくていい静寂の中で、本当の休息を始めましょう。',
+      yt:'https://youtube.com'
+    },
+    wood: {
+      kanji:'木', color:'#5A8A5E',
+      nameEn:'Today, you need Wood.', nameKo:'오늘 당신에겐 목(木)의 생기가 필요합니다', nameJp:'今日のあなたには、木の生気が必要です',
+      descEn:'To unblock stagnated energy. Let this rhythm gently restore your flow and move you forward.',
+      descKo:'답답하게 막혀 있던 흐름을 뚫고, 다시 앞으로 나아갈 유연한 에너지를 깨웁니다. 무너진 리듬을 단단하게 일으켜 세워 드립니다.',
+      descJp:'滞っていた流れを解きほぐし、再び前へ進む柔らかなエネルギーを呼び覚まします。崩れたリズムを、もう一度立て直しましょう。',
+      yt:'https://youtube.com'
+    },
+    fire: {
+      kanji:'火', color:'#C4552A',
+      nameEn:'Today, you need Fire.', nameKo:'오늘 당신에겐 화(火)의 온기가 필요합니다', nameJp:'今日のあなたには、火の温もりが必要です',
+      descEn:'To rekindle your inner warmth. Let these tones dissolve your fatigue and fill you with gentle vitality.',
+      descKo:'차가워진 감각을 따뜻하게 녹이고, 가슴속에 잊고 있던 활력을 불러일으킵니다. 지친 마음에 긍정적인 파동을 채워 드립니다.',
+      descJp:'冷えた感覚を温かく溶かし、胸の奥に眠っていた活力を呼び起こします。疲れた心に、やさしい波動を満たしましょう。',
+      yt:'https://youtube.com'
+    },
+    earth: {
+      kanji:'土', color:'#A07840',
+      nameEn:'Today, you need Earth.', nameKo:'오늘 당신에겐 토(土)의 안식이 필요합니다', nameJp:'今日のあなたには、土の安らぎが必要です',
+      descEn:'To ground your scattered thoughts. Feel the steady nourishment holding you safely in place.',
+      descKo:'둥둥 떠다니던 마음을 단단한 대지 위로 내려놓고, 흔들리지 않는 중심을 선물합니다. 온전히 보호받는 편안함을 느껴보세요.',
+      descJp:'浮ついた心を、堅い大地の上へそっと下ろします。揺るぎない中心と、包み込まれるような安心感をお届けします。',
+      yt:'https://youtube.com'
+    },
+    metal: {
+      kanji:'金', color:'#8A9BAE',
+      nameEn:'Today, you need Metal.', nameKo:'오늘 당신에겐 금(金)의 명료함이 필요합니다', nameJp:'今日のあなたには、金の明晰さが必要です',
+      descEn:'To clear away emotional noise. Let this tone sharpen your mental clarity and restore your edge.',
+      descKo:'복잡하게 엉킨 잡음을 맑게 정돈하고, 선명한 고요함을 되찾아 드립니다. 흐릿해진 감각과 경계를 매끄럽게 가다듬으세요.',
+      descJp:'複雑に絡み合った雑音を静かに整え、鮮明な静寂を取り戻します。ぼやけた感覚と輪郭を、すっきりと研ぎ澄ませましょう。',
+      yt:'https://youtube.com'
+    }
+  };
+
+  // ── QUIZ
+  function selectOpt(step, weights, btn) {
+    btn.closest('.quiz-options').querySelectorAll('.quiz-opt').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+
+    const labelEl = btn.querySelector('[data-en]');
+    selectedLabels[step] = {
+      en: labelEl.getAttribute('data-en'),
+      ko: labelEl.getAttribute('data-ko'),
+      jp: labelEl.getAttribute('data-jp')
+    };
+
+    Object.entries(weights).forEach(function(entry) {
+      scores[entry[0]] += entry[1];
+    });
+
+    setTimeout(function() {
+      document.getElementById('dot-' + step).classList.add('done');
+      currentStep++;
+      if (currentStep < totalSteps) {
+        document.getElementById('step-' + step).classList.remove('active');
+        document.getElementById('step-' + currentStep).classList.add('active');
+      } else {
+        showResult();
+      }
+    }, 380);
+  }
+
+  // ── RESULT
+  function showResult() {
+    document.getElementById('quiz-section').style.display = 'none';
+
+    // 동점 시 '오늘의 일진 오행'과 가까운 쪽을 우선한다 (삽입 순서 편향 제거)
+    var todayEl = todayDayElement();
+    var cycle   = ['water','wood','fire','earth','metal'];
+    var ti      = cycle.indexOf(todayEl);
+    const sorted = Object.entries(scores).sort(function(a,b){
+      if (b[1] !== a[1]) return b[1] - a[1];
+      var da = Math.min((cycle.indexOf(a[0])-ti+5)%5, (ti-cycle.indexOf(a[0])+5)%5);
+      var db = Math.min((cycle.indexOf(b[0])-ti+5)%5, (ti-cycle.indexOf(b[0])+5)%5);
+      return da - db;
+    });
+    const topKey    = sorted[0][0];
+    const secondKey = sorted[1][0];
+    const lang = currentLang;
+    const d  = elementData[topKey];
+    const d2 = elementData[secondKey];
+
+    // Primary circle
+    var circle = document.getElementById('result-circle');
+    circle.style.background = d.color + '22';
+    circle.style.border = '1px solid ' + d.color + '44';
+    circle.innerHTML = '<span style="font-size:48px">' + d.kanji + '</span>';
+
+    document.getElementById('result-kanji').style.color = d.color;
+    document.getElementById('result-kanji').textContent = d.kanji;
+    document.getElementById('result-name').textContent  = lang==='jp' ? d.nameJp : lang==='ko' ? d.nameKo : d.nameEn;
+    document.getElementById('result-desc').textContent  = lang==='jp' ? d.descJp : lang==='ko' ? d.descKo : d.descEn;
+    document.getElementById('result-yt').href = d.yt;
+
+    var listenLabels = { en:'Listen — ' + topKey.charAt(0).toUpperCase()+topKey.slice(1) + ' Resonance', ko:d.kanji+' 공명 듣기', jp:d.kanji+'の共鳴を聴く' };
+    document.getElementById('result-yt').textContent = listenLabels[lang];
+
+    // Explainable
+    var introText = { en:'Your answers revealed a clear pattern:', ko:'오늘 당신의 답변에서 이런 패턴이 보였습니다:', jp:'今日のあなたの回答から、こんなパターンが見えました:' };
+    var koName    = { water:'수', wood:'목', fire:'화', earth:'토', metal:'금' };
+    var jpRead    = { water:'すい', wood:'もく', fire:'か', earth:'ど', metal:'きん' };
+    var connText  = {
+      en: 'These choices reflect the energy of <strong>' + topKey.charAt(0).toUpperCase()+topKey.slice(1) + ' (' + d.kanji + ')</strong>. That is why we recommend this resonance for you today.',
+      ko: '이 선택들은 <strong>' + koName[topKey] + '(' + d.kanji + ')</strong>의 에너지와 연결됩니다. 그래서 오늘의 공명으로 추천드립니다.',
+      jp: 'これらの選択は <strong>' + d.kanji + '（' + jpRead[topKey] + '）</strong> のエネルギーと繋がっています。だから今日はこの共鳴をお勧めします。'
+    };
+
+    var labels = selectedLabels.filter(Boolean).map(function(l){ return '✓ &nbsp;' + (l[lang]||l.en); }).join('<br>');
+    document.getElementById('result-explain').innerHTML =
+      '<div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;">' + introText[lang] + '</div>' +
+      '<div style="color:var(--ink);font-size:13px;line-height:2.2;margin-bottom:16px;">' + labels + '</div>' +
+      '<div style="font-size:12px;color:var(--muted);line-height:1.8;">' + connText[lang] + '</div>';
+
+    // Secondary
+    document.getElementById('secondary-kanji').style.color = d2.color;
+    document.getElementById('secondary-kanji').textContent = d2.kanji;
+    document.getElementById('secondary-name').textContent  = lang==='jp' ? d2.nameJp : lang==='ko' ? d2.nameKo : d2.nameEn;
+    document.getElementById('secondary-yt').href = d2.yt;
+    var alsoLabels = { en:'Also listen — '+secondKey.charAt(0).toUpperCase()+secondKey.slice(1), ko:d2.kanji+' 공명도 듣기', jp:d2.kanji+'の共鳴もあわせて' };
+    document.getElementById('secondary-yt').textContent = alsoLabels[lang];
+
+    _quizScores = Object.assign({}, scores);
+    document.getElementById('result-section').classList.add('show');
+    document.getElementById('result-section').scrollIntoView({ behavior:'smooth', block:'start' });
+  }
+
+  // ── RESET
+  function resetQuiz() {
+    scores = { water:0, wood:0, fire:0, earth:0, metal:0 };
+    selectedLabels = [];
+    currentStep = 0;
+    document.querySelectorAll('.progress-dot').forEach(function(d){ d.classList.remove('done'); });
+    document.querySelectorAll('.quiz-step').forEach(function(s){ s.classList.remove('active'); });
+    document.querySelectorAll('.quiz-opt').forEach(function(b){ b.classList.remove('selected'); });
+    document.getElementById('step-0').classList.add('active');
+    document.getElementById('result-section').classList.remove('show');
+    document.getElementById('quiz-section').style.display = 'block';
+    document.getElementById('quiz-section').scrollIntoView({ behavior:'smooth' });
+  }
+
+  // Init
+  setLang('en');
+
+  // ── 오행 색상 맵
+  const EL_COLOR = {water:'#4A7FA5',wood:'#5A8A5E',fire:'#C4552A',earth:'#A07840',metal:'#8A9BAE'};
+  const EL_KANJI = {water:'水',wood:'木',fire:'火',earth:'土',metal:'金'};
+
+  // ── 타고난 결 분석
+  var _innateData = null;
+  var _quizScores = null;  // 퀴즈 완료 점수 저장
+
+  async function runInnate() {
+    const birth = document.getElementById('innate-birth').value;
+    const hour  = parseInt(document.getElementById('innate-hour').value);
+    if (!birth) { alert('Please enter your birth date.'); return; }
+
+    document.getElementById('innate-form').style.display    = 'none';
+    document.getElementById('innate-loading').style.display = 'block';
+    document.getElementById('innate-result').style.display  = 'none';
+
+    try {
+      const res = await fetch('/api/innate', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ birth, hour: hour < 0 ? null : hour, lang: currentLang, quiz_scores: _quizScores || undefined })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Analysis failed');
+      _innateData = data;
+      renderInnate(data);
+    } catch(e) {
+      alert('Error: ' + e.message);
+      document.getElementById('innate-form').style.display = 'grid';
+    } finally {
+      document.getElementById('innate-loading').style.display = 'none';
+    }
+  }
+
+  function renderInnate(d) {
+    const r = d.reading;
+    document.getElementById('ir-type').textContent    = r.resonance_type || '';
+    document.getElementById('ir-headline').textContent = r.headline || '';
+    document.getElementById('ir-primary').textContent  = r.primary_description || '';
+    document.getElementById('ir-balance').textContent  = r.balance_note || '';
+    document.getElementById('ir-music').textContent    = '♪ ' + (r.music_guidance || '');
+
+    // 오행 분포 바
+    const dist = d.model_data ? d.model_data.vector : d.distribution;
+    const total = Object.values(dist).reduce((a,b)=>a+b,0);
+    const distEl = document.getElementById('ir-dist');
+    distEl.innerHTML = Object.entries(dist).map(([el, cnt]) =>
+      `<div style="display:flex;align-items:center;gap:12px;">
+        <span style="font-family:'Noto Serif JP',serif;color:${EL_COLOR[el]};width:20px;text-align:center">${EL_KANJI[el]}</span>
+        <div style="flex:1;height:4px;background:rgba(247,244,238,0.1);border-radius:2px;">
+          <div style="height:4px;width:${Math.round(cnt/total*100)}%;background:${EL_COLOR[el]};border-radius:2px;transition:width 0.8s;"></div>
+        </div>
+        <span style="font-size:11px;color:rgba(247,244,238,0.4);min-width:16px;">${cnt}</span>
+      </div>`
+    ).join('');
+
+    document.getElementById('innate-result').style.display = 'block';
+    document.getElementById('innate-result').scrollIntoView({behavior:'smooth',block:'start'});
+    // sound_focus는 Python이 계산한 결과 사용 (JS 중복 계산 제거)
+    if (d.sound_focus) renderHybrid(d.sound_focus);
+    else if (_quizScores) renderHybrid(null, d.model_data.vector, _quizScores);
+  }
+
+  // ── Born + Today 결합 카드
+  // soundFocus: Python API 결과 (우선)
+  // bornVector + quizScores: JS fallback (quiz_scores 없이 호출된 경우)
+  function renderHybrid(soundFocus, bornVector, quizScores) {
+    const KANJI = {water:'水',wood:'木',fire:'火',earth:'土',metal:'金'};
+    const DIR = {
+      water:{jp:'深い静寂と流れる水音のセッション',ko:'깊은 고요와 흐르는 물소리 세션',en:'Deep stillness and flowing water soundscapes'},
+      wood: {jp:'芽吹きの生命力と上昇リズムのセッション',ko:'생명력과 상승하는 리듬 세션',en:'Vital growth energy with rising momentum'},
+      fire: {jp:'温もりと鼓動する光のセッション',ko:'온기와 고동치는 빛의 세션',en:'Warmth and pulsing luminous energy'},
+      earth:{jp:'大地の安定と包み込む厚みのセッション',ko:'대지의 안정과 포근한 두께감 세션',en:'Grounded stability with enveloping depth'},
+      metal:{jp:'澄んだ輪郭と研ぎ澄まされた静けさのセッション',ko:'맑은 윤곽과 정제된 고요 세션',en:'Clear contours and refined sonic precision'},
+    };
+
+    var primary, finalScores, direction;
+
+    if (soundFocus) {
+      // ── Python 계산 결과 사용 (정식 경로)
+      primary     = soundFocus.primary_sound;
+      finalScores = soundFocus.final_scores;
+      direction   = soundFocus.sound_direction;
+    } else {
+      // ── JS fallback (quiz_scores 없이 Born만 있는 경우)
+      const W_TODAY = 0.7, W_BORN = 0.3, BALANCE = 20.0;
+      const els = ['water','wood','fire','earth','metal'];
+      const totalQuiz = Object.values(quizScores).reduce((a,b)=>a+b,0) || 1;
+      const todayVec = {};
+      els.forEach(e => todayVec[e] = (quizScores[e]||0) / totalQuiz * 100);
+      const bornDef = {};
+      els.forEach(e => bornDef[e] = Math.max(0, BALANCE - (bornVector[e]||0)));
+      finalScores = {};
+      els.forEach(e => finalScores[e] = Math.round((todayVec[e]*W_TODAY + bornDef[e]*W_BORN)*10)/10);
+      primary   = [...els].sort((a,b) => finalScores[b] - finalScores[a])[0];
+      direction = DIR[primary][currentLang] || DIR[primary].en;
+    }
+
+    const HL = {
+      jp: KANJI[primary]+'の共鳴が、今日のあなたに最も響く',
+      ko: KANJI[primary]+'의 공명이 오늘 당신에게 가장 울립니다',
+      en: KANJI[primary]+' resonance is what you need most today',
+    };
+
+    document.getElementById('hybrid-headline').textContent  = HL[currentLang]||HL.en;
+    document.getElementById('hybrid-direction').textContent = '♪ '+(direction||DIR[primary][currentLang]||DIR[primary].en);
+
+    const maxVal = Math.max(...Object.values(finalScores));
+    document.getElementById('hybrid-bars').innerHTML = Object.entries(finalScores).map(([e,v]) =>
+      '<div style="display:flex;align-items:center;gap:10px;">' +
+      '<span style="font-family:'Noto Serif JP',serif;color:'+EL_COLOR[e]+';width:20px;text-align:center">'+KANJI[e]+'</span>' +
+      '<div style="flex:1;height:3px;background:rgba(247,244,238,0.08);border-radius:2px;">' +
+      '<div style="height:3px;width:'+Math.round(v/maxVal*100)+'%;background:'+EL_COLOR[e]+';border-radius:2px;transition:width 1s;"></div>' +
+      '</div>' +
+      '<span style="font-size:10px;color:rgba(247,244,238,0.3);min-width:28px;">'+v+'%</span>' +
+      '</div>'
+    ).join('');
+
+    document.getElementById('hybrid-card').style.display = 'block';
+  }
+
+  // ── 궁합 섹션 표시
+  function showCompatSection() {
+    document.getElementById('compat-section').style.display = 'block';
+    document.getElementById('compat-section').scrollIntoView({behavior:'smooth',block:'start'});
+  }
+
+  // ── 궁합 분석
+  async function runCompat() {
+    if (!_innateData) { alert('Please complete your own analysis first.'); return; }
+    const birthB = document.getElementById('compat-birth').value;
+    const hourB  = parseInt(document.getElementById('compat-hour').value);
+    if (!birthB) { alert('Please enter your partner\'s birth date.'); return; }
+
+    document.getElementById('compat-loading').style.display = 'block';
+    document.getElementById('compat-result').style.display  = 'none';
+    document.getElementById('compat-btn').disabled = true;
+
+    try {
+      const birthA = document.getElementById('innate-birth').value;
+      const hourA  = parseInt(document.getElementById('innate-hour').value);
+      const res = await fetch('/api/compatibility', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          birth_a: birthA, hour_a: hourA < 0 ? null : hourA,
+          birth_b: birthB, hour_b: hourB < 0 ? null : hourB,
+          lang: currentLang
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Analysis failed');
+      renderCompat(data);
+    } catch(e) {
+      alert('Error: ' + e.message);
+    } finally {
+      document.getElementById('compat-loading').style.display = 'none';
+      document.getElementById('compat-btn').disabled = false;
+    }
+  }
+
+  function renderCompat(d) {
+    const r = d.reading;
+    document.getElementById('cr-type').textContent    = r.relation_type || '';
+    document.getElementById('cr-headline').textContent = r.relation_headline || '';
+    document.getElementById('cr-desc').textContent    = r.relation_description || '';
+    document.getElementById('cr-harmony').textContent  = r.harmony_note || '';
+    document.getElementById('cr-tension').textContent  = r.tension_note || '';
+    document.getElementById('cr-music').textContent    = '♪ ' + (r.music_suggestion || '');
+    document.getElementById('compat-result').style.display = 'block';
+    document.getElementById('compat-result').scrollIntoView({behavior:'smooth',block:'start'});
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,2 @@
+ephem==4.1.6
+google-generativeai==0.8.3
