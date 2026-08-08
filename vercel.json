@@ -1,5 +1,10 @@
 {
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/$1" }
-  ]
+  "functions": {
+    "api/innate.py": {
+      "runtime": "vercel-python@4"
+    },
+    "api/compatibility.py": {
+      "runtime": "vercel-python@4"
+    }
+  }
 }
