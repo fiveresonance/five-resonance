@@ -425,12 +425,18 @@
       <input type="date" id="innate-birth" style="padding:14px 18px;background:rgba(247,244,238,0.08);border:1px solid rgba(247,244,238,0.25);color:var(--paper);font-size:14px;letter-spacing:0.05em;width:100%;border-radius:2px;" />
       <select id="innate-hour" style="padding:14px 18px;background:rgba(13,13,13,0.85);border:1px solid rgba(247,244,238,0.25);color:var(--paper);font-size:13px;letter-spacing:0.05em;width:100%;border-radius:2px;">
         <option value="-1" data-en="Birth hour unknown" data-ko="태어난 시 모름" data-jp="生まれた時間不明">Birth hour unknown</option>
-        <option value="0">子時 00:00–01:00</option><option value="1">丑時 01:00–03:00</option>
-        <option value="3">寅時 03:00–05:00</option><option value="5">卯時 05:00–07:00</option>
-        <option value="7">辰時 07:00–09:00</option><option value="9">巳時 09:00–11:00</option>
-        <option value="11">午時 11:00–13:00</option><option value="13">未時 13:00–15:00</option>
-        <option value="15">申時 15:00–17:00</option><option value="17">酉時 17:00–19:00</option>
-        <option value="19">戌時 19:00–21:00</option><option value="21">亥時 21:00–23:00</option>
+        <option value="23">23:00–01:00（子）</option>
+        <option value="1">01:00–03:00（丑）</option>
+        <option value="3">03:00–05:00（寅）</option>
+        <option value="5">05:00–07:00（卯）</option>
+        <option value="7">07:00–09:00（辰）</option>
+        <option value="9">09:00–11:00（巳）</option>
+        <option value="11">11:00–13:00（午）</option>
+        <option value="13">13:00–15:00（未）</option>
+        <option value="15">15:00–17:00（申）</option>
+        <option value="17">17:00–19:00（酉）</option>
+        <option value="19">19:00–21:00（戌）</option>
+        <option value="21">21:00–23:00（亥）</option>
       </select>
       <button class="btn-gold" onclick="runInnate()" id="innate-btn"
         data-en="Reveal my Five Elements" data-ko="내 오행 보기" data-jp="私の五行を見る">
@@ -485,12 +491,18 @@
     <input type="date" id="compat-birth" style="padding:14px 18px;background:rgba(247,244,238,0.08);border:1px solid rgba(247,244,238,0.25);color:var(--paper);font-size:14px;width:100%;border-radius:2px;" placeholder="Partner's birth date"/>
     <select id="compat-hour" style="padding:14px 18px;background:rgba(13,13,13,0.85);border:1px solid rgba(247,244,238,0.25);color:var(--paper);font-size:13px;width:100%;border-radius:2px;">
       <option value="-1" data-en="Birth hour unknown" data-ko="태어난 시 모름" data-jp="生まれた時間不明">Birth hour unknown</option>
-      <option value="0">子時 00:00–01:00</option><option value="1">丑時 01:00–03:00</option>
-      <option value="3">寅時 03:00–05:00</option><option value="5">卯時 05:00–07:00</option>
-      <option value="7">辰時 07:00–09:00</option><option value="9">巳時 09:00–11:00</option>
-      <option value="11">午時 11:00–13:00</option><option value="13">未時 13:00–15:00</option>
-      <option value="15">申時 15:00–17:00</option><option value="17">酉時 17:00–19:00</option>
-      <option value="19">戌時 19:00–21:00</option><option value="21">亥時 21:00–23:00</option>
+      <option value="23">23:00–01:00（子）</option>
+      <option value="1">01:00–03:00（丑）</option>
+      <option value="3">03:00–05:00（寅）</option>
+      <option value="5">05:00–07:00（卯）</option>
+      <option value="7">07:00–09:00（辰）</option>
+      <option value="9">09:00–11:00（巳）</option>
+      <option value="11">11:00–13:00（午）</option>
+      <option value="13">13:00–15:00（未）</option>
+      <option value="15">15:00–17:00（申）</option>
+      <option value="17">17:00–19:00（酉）</option>
+      <option value="19">19:00–21:00（戌）</option>
+      <option value="21">21:00–23:00（亥）</option>
     </select>
     <button class="btn-gold" onclick="runCompat()" id="compat-btn"
       data-en="Read our resonance" data-ko="우리의 공명 보기" data-jp="ふたりの共鳴を読む">
