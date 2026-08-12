@@ -802,9 +802,24 @@
       </div>`
     ).join('');
 
-    // 음악 링크 버튼 — primary / secondary
+    // 음악 링크 버튼 — 부족한 원소 기준 (보충 로직)
     const vec = d.model_data ? d.model_data.vector : {};
-    const sorted = Object.entries(vec).sort((a,b) => b[1]-a[1]);
+    const BALANCE = 20.0;
+    // 부족량 계산: BALANCE - 보유량 (0 이하면 충분)
+    const deficiency = Object.entries(vec).map(([el, cnt]) => [el, Math.max(0, BALANCE - cnt)]);
+    // sound_focus가 있으면 그 primary/secondary 사용, 없으면 부족량 높은 순
+    let recommend = [];
+    if (d.sound_focus && d.sound_focus.primary_sound) {
+      recommend.push(d.sound_focus.primary_sound);
+      // secondary: 부족량 2위 (primary 제외)
+      const sec = deficiency.filter(([el]) => el !== d.sound_focus.primary_sound)
+                            .sort((a,b) => b[1]-a[1])[0];
+      if (sec && sec[1] > 0) recommend.push(sec[0]);
+    } else {
+      recommend = deficiency.sort((a,b) => b[1]-a[1])
+                            .filter(([,v]) => v > 0)
+                            .slice(0,2).map(([el]) => el);
+    }
     const listenDiv = document.getElementById('ir-listen');
     listenDiv.innerHTML = '';
     const btnLabels = {
@@ -812,8 +827,7 @@
       ko: ['지금 듣기', '함께 듣기'],
       en: ['Listen Now', 'Also Listen']
     };
-    sorted.slice(0,2).forEach(([el, cnt], i) => {
-      if (cnt === 0) return;
+    recommend.forEach((el, i) => {
       const d2 = elementData[el];
       if (!d2 || !d2.yt) return;
       const label = btnLabels[currentLang] || btnLabels.jp;
