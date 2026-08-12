@@ -460,7 +460,9 @@
     <div id="ir-headline" style="font-family:'Cormorant Garamond',serif;font-size:clamp(20px,3vw,30px);font-weight:300;color:var(--paper);margin-bottom:20px;line-height:1.4;"></div>
     <div id="ir-primary" style="font-size:13px;color:rgba(247,244,238,0.75);line-height:1.9;margin-bottom:16px;"></div>
     <div id="ir-balance" style="font-size:12px;color:rgba(247,244,238,0.5);line-height:1.8;margin-bottom:24px;border-top:1px solid rgba(247,244,238,0.1);padding-top:16px;"></div>
-    <div id="ir-music" style="font-size:12px;letter-spacing:0.08em;color:var(--gold);"></div>
+    <div id="ir-music" style="font-size:12px;letter-spacing:0.08em;color:var(--gold);margin-bottom:16px;"></div>
+    <!-- 음악 링크 버튼 -->
+    <div id="ir-listen" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;"></div>
     <!-- 오행 분포 바 -->
     <div id="ir-dist" style="margin-top:28px;display:grid;gap:8px;"></div>
     <!-- Born + Today 결합 카드 (퀴즈 완료 후 표시) -->
@@ -799,6 +801,31 @@
         <span style="font-size:11px;color:rgba(247,244,238,0.4);min-width:16px;">${cnt}</span>
       </div>`
     ).join('');
+
+    // 음악 링크 버튼 — primary / secondary
+    const vec = d.model_data ? d.model_data.vector : {};
+    const sorted = Object.entries(vec).sort((a,b) => b[1]-a[1]);
+    const listenDiv = document.getElementById('ir-listen');
+    listenDiv.innerHTML = '';
+    const btnLabels = {
+      jp: ['今すぐ聴く', 'あわせて聴く'],
+      ko: ['지금 듣기', '함께 듣기'],
+      en: ['Listen Now', 'Also Listen']
+    };
+    sorted.slice(0,2).forEach(([el, cnt], i) => {
+      if (cnt === 0) return;
+      const d2 = elementData[el];
+      if (!d2 || !d2.yt) return;
+      const label = btnLabels[currentLang] || btnLabels.jp;
+      const btn = document.createElement('a');
+      btn.href = d2.yt;
+      btn.target = '_blank';
+      btn.style.cssText = `display:inline-flex;align-items:center;gap:8px;border:1px solid ${EL_COLOR[el]}44;color:${EL_COLOR[el]};padding:10px 20px;font-size:11px;letter-spacing:0.12em;text-decoration:none;transition:all 0.3s;`;
+      btn.onmouseover = () => { btn.style.background = EL_COLOR[el]+'22'; };
+      btn.onmouseout  = () => { btn.style.background = 'transparent'; };
+      btn.innerHTML = `<span style="font-family:'Noto Serif JP',serif;font-size:16px;">${EL_KANJI[el]}</span> ${label[i]}`;
+      listenDiv.appendChild(btn);
+    });
 
     document.getElementById('innate-result').style.display = 'block';
     document.getElementById('innate-result').scrollIntoView({behavior:'smooth',block:'start'});
