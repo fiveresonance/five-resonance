@@ -85,7 +85,7 @@ Output JSON:
 
 def gemini_narrate(data: dict, lang: str) -> dict:
     genai.configure(api_key=os.environ["GEMINI_API_KEY"])
-    model = genai.GenerativeModel("gemini-2.0-flash")
+    model = genai.GenerativeModel("gemini-2.5-flash")
     prompt = PROMPTS.get(lang, PROMPTS["jp"]).format(
         data=json.dumps(data, ensure_ascii=False)
     )
