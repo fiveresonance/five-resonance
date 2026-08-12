@@ -90,7 +90,14 @@ def gemini_narrate(model_data: dict, lang: str) -> dict:
         prompt,
         generation_config={"response_mime_type": "application/json"}
     )
-    return json.loads(resp.text)
+    text = resp.text.strip()
+    # 마크다운 코드블록 제거
+    if text.startswith("```"):
+        text = text.split("```")[1]
+        if text.startswith("json"):
+            text = text[4:]
+        text = text.strip()
+    return json.loads(text)
 
 
 # ── HTTP 핸들러 ───────────────────────────────────────────

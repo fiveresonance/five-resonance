@@ -93,7 +93,13 @@ def gemini_narrate(data: dict, lang: str) -> dict:
         prompt,
         generation_config={"response_mime_type": "application/json"}
     )
-    return json.loads(resp.text)
+    text = resp.text.strip()
+    if text.startswith("```"):
+        text = text.split("```")[1]
+        if text.startswith("json"):
+            text = text[4:]
+        text = text.strip()
+    return json.loads(text)
 
 
 class handler(BaseHTTPRequestHandler):
