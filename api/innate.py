@@ -117,13 +117,26 @@ def gemini_narrate(model_data: dict, lang: str) -> dict:
         generation_config={"response_mime_type": "application/json"}
     )
     import re as _re
-    text = resp.text.strip()
-    text = _re.sub(r"```json\s*", "", text)
-    text = _re.sub(r"```\s*", "", text)
-    text = text.strip()
-    decoder = json.JSONDecoder()
-    obj, _ = decoder.raw_decode(text)
-    # 일본어 후처리
+    raw = resp.text.strip() if resp.text else ""
+
+    # 1. 마크다운 코드펜스 제거
+    raw = _re.sub(r"```json\s*", "", raw)
+    raw = _re.sub(r"```\s*", "", raw)
+    raw = raw.strip()
+
+    # 2. JSON 시작점 탐색
+    brace = raw.find("{")
+    if brace > 0:
+        raw = raw[brace:]
+
+    # 3. 파싱 시도 (실패 시 상세 오류 반환)
+    try:
+        decoder = json.JSONDecoder()
+        obj, _ = decoder.raw_decode(raw)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Gemini JSON parse error at char {e.pos}: {e.msg} | raw={raw[:200]}")
+
+    # 4. 일본어 후처리
     if lang == "jp":
         for key in obj:
             if isinstance(obj[key], str):

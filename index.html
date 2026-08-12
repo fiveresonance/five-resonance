@@ -118,12 +118,6 @@
   /* FOOTER */
   footer { padding:48px; text-align:center; border-top:1px solid var(--border); font-size:11px; letter-spacing:0.15em; color:var(--muted); }
 
-  /* 캘린더 아이콘 색상 */
-  input[type="date"]::-webkit-calendar-picker-indicator {
-    filter: invert(1) opacity(0.6);
-    cursor: pointer;
-  }
-
   @media (max-width:600px) {
     .lang-bar { padding:16px 24px; }
     .quiz-options { grid-template-columns:1fr; }
@@ -765,7 +759,8 @@
         headers:{'Content-Type':'application/json'},
         body: JSON.stringify({ birth, hour: hour < 0 ? null : hour, lang: currentLang, quiz_scores: _quizScores || undefined })
       });
-      const data = await res.json();
+      let data;
+      try { data = await res.json(); } catch(_) { throw new Error('サーバーエラーが発生しました。もう一度お試しください。'); }
       if (!res.ok) throw new Error(data.error || 'Analysis failed');
       _innateData = data;
       renderInnate(data);
@@ -893,7 +888,8 @@
           lang: currentLang
         })
       });
-      const data = await res.json();
+      let data;
+      try { data = await res.json(); } catch(_) { throw new Error('サーバーエラーが発生しました。もう一度お試しください。'); }
       if (!res.ok) throw new Error(data.error || 'Analysis failed');
       renderCompat(data);
     } catch(e) {
