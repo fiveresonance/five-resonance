@@ -36,6 +36,11 @@ PROMPTS = {
    - 音響提案の文末は「〜が適しています」または「〜が効果的です」と言い切ること。
 3. ブランドトーン:
    - ミニマルで洗練されたウェルネス・音響デザインブランドにふさわしい、静かで美しい日本語で記述すること。
+4. 語彙およびドメイン制約:
+   - 音楽・ウェルネス・音響デザインにふさわしい語彙のみを使用すること。
+   - 電化製品・機械・工業分野の用語（静音、制動、作動など）は使用禁止。
+   - 「思考」には「沈める」ではなく「深める」「整える」を使用すること。
+   - 「音楽」には「静音」ではなく「静かな」「静穏な」を使用すること。
 
 入力データ:
 {data}
@@ -103,6 +108,13 @@ def clean_japanese_text(text: str) -> str:
     text = text.replace("望ましい気配があります", "望ましいでしょう")
     text = text.replace("適している傾向があります", "適しています")
     text = text.replace("現れる傾向があります。", "現れます。")
+    # 추가 교정 (2026-08-12)
+    text = text.replace("思考を沈めていく", "思考を深めていく")
+    text = text.replace("心を沈めていく", "心を静かに沈めていく")
+    text = text.replace("整える必要があります", "整えていくとよいでしょう")
+    text = text.replace("静音音楽", "静かな音楽")
+    text = text.replace("静音アンビエント", "静穏なアンビエント")
+    text = text.replace("静音", "静穏")
     return text
 
 
@@ -114,7 +126,7 @@ def gemini_narrate(model_data: dict, lang: str) -> dict:
     )
     resp = model.generate_content(
         prompt,
-        generation_config={"response_mime_type": "application/json"}
+        generation_config={"response_mime_type": "application/json", "temperature": 0.2}
     )
     import re as _re
     raw = resp.text.strip() if resp.text else ""
