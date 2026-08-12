@@ -131,7 +131,7 @@
 <!-- NAV -->
 <nav class="lang-bar">
   <span class="brand-nav">Five Resonance</span>
-  <div class="lang-toggle">
+  <div class="lang-toggle" style="display:none;">
     <button class="lang-btn active" onclick="setLang('en')">EN</button>
     <button class="lang-btn" onclick="setLang('ko')">한국어</button>
     <button class="lang-btn" onclick="setLang('jp')">日本語</button>
@@ -727,8 +727,14 @@
     document.getElementById('quiz-section').scrollIntoView({ behavior:'smooth' });
   }
 
-  // Init
-  setLang('en');
+  // Init — URL 파라미터로 언어 선택 (상훈 전용: ?lang=ko, ?lang=en)
+  // 파라미터 없으면 일본어 기본
+  (function() {
+    const params = new URLSearchParams(window.location.search);
+    const langParam = params.get('lang');
+    const allowed = ['ko', 'en', 'jp'];
+    setLang(allowed.includes(langParam) ? langParam : 'jp');
+  })();
 
   // ── 오행 색상 맵
   const EL_COLOR = {water:'#4A7FA5',wood:'#5A8A5E',fire:'#C4552A',earth:'#A07840',metal:'#8A9BAE'};
