@@ -31,6 +31,15 @@ PROMPTS = {
 1. 占い・運命の言葉禁止（縁、運命、相性◎など）。
 2. 出力は以下のJSONのみ。
 
+【日本語トーン＆マナー厳格ルール】
+1. 禁止単語および不自然な表現の排除:
+   - 「制律」という造語は絶対に使用禁止（「節度」「調和」「調整」を使用すること）。
+   - 硬すぎる機械的表現（「制動する」「深水」）を避け、洗練された表現を使用。
+2. 文末表現の重複回避:
+   - 「〜傾向があります」の連続使用は禁止（1カードにつき最大1回まで）。
+3. ブランドトーン:
+   - ミニマルで洗練されたウェルネス・音響デザインブランドにふさわしい、静かで美しい日本語で記述すること。
+
 入力データ:
 {data}
 
@@ -83,6 +92,20 @@ Output JSON:
 }
 
 
+def clean_japanese_text(text: str) -> str:
+    if not text:
+        return text
+    text = text.replace("制律", "節度")
+    text = text.replace("深水", "深い水")
+    text = text.replace("制動します", "和らげます")
+    text = text.replace("制動", "調整")
+    text = text.replace("が望ましい気配があります", "が効果的です")
+    text = text.replace("望ましい気配があります", "望ましいでしょう")
+    text = text.replace("適している傾向があります", "適しています")
+    text = text.replace("現れる傾向があります。", "現れます。")
+    return text
+
+
 def gemini_narrate(data: dict, lang: str) -> dict:
     genai.configure(api_key=os.environ["GEMINI_API_KEY"])
     model = genai.GenerativeModel("gemini-3.5-flash")
@@ -99,7 +122,13 @@ def gemini_narrate(data: dict, lang: str) -> dict:
         if text.startswith("json"):
             text = text[4:]
         text = text.strip()
-    return json.loads(text)
+    decoder = json.JSONDecoder()
+    obj, _ = decoder.raw_decode(text)
+    if lang == "jp":
+        for key in obj:
+            if isinstance(obj[key], str):
+                obj[key] = clean_japanese_text(obj[key])
+    return obj
 
 
 class handler(BaseHTTPRequestHandler):
