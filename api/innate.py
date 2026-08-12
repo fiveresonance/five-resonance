@@ -25,6 +25,7 @@ PROMPTS = {
 1. 占いや運勢の言葉（運気, 吉, 凶, 運命）は絶対禁止。
 2. 断定ではなく「〜の気配・傾向があります」と描写。
 3. 出力は以下のJSONのみ。前置き不要。
+4. JSON文字列値の中にダブルクォーテーション（"）を絶対に使用禁止。強調には「」または『』を使用すること。
 
 【日本語トーン＆マナー厳格ルール】
 1. 禁止単語および不自然な表現の排除:
@@ -141,7 +142,7 @@ def gemini_narrate(model_data: dict, lang: str) -> dict:
     if brace > 0:
         raw = raw[brace:]
 
-    # 3. 파싱 시도 (실패 시 상세 오류 반환)
+    # 3. 파싱 시도 (실패 시 재시도)
     try:
         decoder = json.JSONDecoder()
         obj, _ = decoder.raw_decode(raw)
