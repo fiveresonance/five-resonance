@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About — Five Resonance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400&family=Noto+Serif+JP:wght@200;300;400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy-deep: #151f2e;
+      --navy-mid:  #1c2d42;
+      --navy:      #23374f;
+      --gold:      #c8a96e;
+      --gold-dim:  #8a7050;
+      --white:     #f0f2f5;
+      --text:      #c8cdd6;
+      --text-dim:  #6b717c;
+      --ash-dim:   #7a7f88;
+      --font-display: 'Cormorant Garamond', serif;
+      --font-body:    'DM Sans', sans-serif;
+      --font-jp:      'Noto Serif JP', serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--navy-deep);
+      color: var(--text);
+      font-family: var(--font-jp);
+      font-weight: 300;
+      font-size: 15px;
+      line-height: 1.95;
+    }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.4rem 3rem;
+      background: rgba(21,31,46,0.88);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(200,169,110,0.1);
+    }
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 1.05rem; font-weight: 300;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--gold); text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--ash-dim); text-decoration: none; transition: color 0.3s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--gold); }
+
+    .hero {
+      min-height: 55vh;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 9rem 3rem 5rem;
+      position: relative; overflow: hidden;
+    }
+    .hero::after {
+      content: '選ぶ';
+      position: absolute; bottom: 2rem; right: 3rem;
+      font-family: var(--font-jp); font-size: clamp(6rem,16vw,13rem);
+      font-weight: 200; color: rgba(200,169,110,0.04);
+      pointer-events: none; user-select: none;
+    }
+    .hero-eyebrow {
+      font-size: 0.68rem; letter-spacing: 0.24em; text-transform: uppercase;
+      color: var(--gold-dim); margin-bottom: 1.4rem;
+    }
+    .hero-question {
+      font-family: var(--font-display);
+      font-size: clamp(1.9rem, 4.5vw, 3.6rem);
+      font-weight: 300; line-height: 1.25;
+      color: var(--white); max-width: 680px;
+    }
+    .hero-question em { font-style: italic; color: var(--gold); }
+    .hero-sub {
+      margin-top: 2rem;
+      font-family: var(--font-jp); font-size: 0.9rem; font-weight: 200;
+      color: var(--ash-dim); max-width: 480px; line-height: 2;
+    }
+
+    .content { max-width: 820px; margin: 0 auto; padding: 0 3rem 10rem; }
+
+    .prose-block { margin-bottom: 5.5rem; }
+    .prose-block h2 {
+      font-family: var(--font-display);
+      font-size: 1.65rem; font-weight: 300; line-height: 1.3;
+      color: var(--white); margin-bottom: 1.6rem;
+    }
+    .prose-block p {
+      color: var(--text); line-height: 2.05; margin-bottom: 1rem;
+      font-size: 0.95rem;
+    }
+    .prose-block p:last-child { margin-bottom: 0; }
+    .prose-block strong { color: var(--white); font-weight: 400; }
+
+    .eyebrow {
+      font-size: 0.65rem; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--gold-dim); margin-bottom: 1.2rem; display: block;
+    }
+
+    /* gogyō table */
+    .gogyou-table {
+      width: 100%; border-collapse: collapse; margin: 2rem 0 1rem;
+    }
+    .gogyou-table th {
+      font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--gold-dim); padding: 0.6rem 1rem;
+      border-bottom: 1px solid rgba(200,169,110,0.15);
+      text-align: left; font-weight: 400;
+    }
+    .gogyou-table td {
+      padding: 0.85rem 1rem; font-size: 0.85rem;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      vertical-align: middle; line-height: 1.7;
+    }
+    .gogyou-table tr:last-child td { border-bottom: none; }
+    .gogyou-table .td-kanji {
+      font-family: var(--font-jp); font-size: 1.4rem; font-weight: 200;
+      width: 48px; text-align: center;
+    }
+    .gogyou-table .td-name { color: var(--gold); width: 80px; }
+    .gogyou-table .td-desc { color: var(--text); }
+
+    /* state grid */
+    .state-grid {
+      display: grid; grid-template-columns: repeat(5, 1fr);
+      gap: 1px; background: rgba(200,169,110,0.07);
+      border: 1px solid rgba(200,169,110,0.07);
+      margin: 2.4rem 0 1rem;
+    }
+    .state-card {
+      background: var(--navy-mid);
+      padding: 1.8rem 1.2rem 1.6rem;
+      transition: background 0.3s;
+    }
+    .state-card:hover { background: rgba(40,60,85,0.95); }
+    .state-kanji {
+      font-family: var(--font-jp); font-size: 1.9rem; font-weight: 200;
+      display: block; margin-bottom: 0.5rem;
+    }
+    .state-name {
+      font-size: 0.62rem; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--ash-dim); display: block; margin-bottom: 0.9rem;
+    }
+    .state-keyword {
+      font-family: var(--font-jp); font-size: 0.8rem; font-weight: 300;
+      color: var(--gold); display: block; margin-bottom: 0.5rem;
+    }
+    .state-desc { font-size: 0.73rem; color: var(--text-dim); line-height: 1.75; }
+    .state-rec { font-size: 0.7rem; color: var(--ash-dim); margin-top: 0.5rem; letter-spacing: 0.03em; }
+
+    .el-water .state-kanji { color: #99d9ff; }
+    .el-wood  .state-kanji { color: #a8c4a0; }
+    .el-fire  .state-kanji { color: #e8a070; }
+    .el-earth .state-kanji { color: #c8b878; }
+    .el-metal .state-kanji { color: #a8b4c8; }
+
+    /* kankyō */
+    .kankyou-block {
+      border-left: 2px solid rgba(200,169,110,0.25);
+      padding: 2rem 2.4rem; margin: 2rem 0;
+      background: rgba(200,169,110,0.03);
+    }
+    .kankyou-block p { font-size: 0.9rem; color: var(--text); line-height: 2.05; }
+    .kankyou-block .artists {
+      font-family: var(--font-display); font-size: 1.1rem; font-weight: 300;
+      font-style: italic; color: var(--white); margin-bottom: 0.8rem; display: block;
+    }
+
+    /* sound selection */
+    .sound-select {
+      background: var(--navy-mid);
+      padding: 2.6rem; margin: 3rem 0;
+    }
+    .sound-row {
+      display: flex; align-items: baseline; gap: 1.2rem;
+      padding: 0.85rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .sound-row:last-child { border-bottom: none; }
+    .sound-state {
+      font-size: 0.85rem; color: var(--ash-dim); min-width: 200px;
+    }
+    .sound-arrow { color: var(--gold-dim); font-size: 0.75rem; }
+    .sound-element {
+      font-family: var(--font-jp); font-size: 1.05rem; font-weight: 200;
+      color: var(--gold);
+    }
+    .sound-feel {
+      font-size: 0.72rem; color: var(--text-dim);
+      margin-left: auto; letter-spacing: 0.04em; font-style: italic;
+    }
+
+    /* declaration */
+    .declaration {
+      text-align: center; padding: 5rem 0 3rem;
+      border-top: 1px solid rgba(200,169,110,0.1);
+      margin-top: 5rem;
+    }
+    .declaration p {
+      font-family: var(--font-jp); font-size: 0.85rem; font-weight: 200;
+      color: var(--ash-dim); margin-bottom: 0.5rem; letter-spacing: 0.06em;
+    }
+    .declaration .tagline {
+      font-family: var(--font-display);
+      font-size: clamp(1.4rem, 3vw, 2.2rem); font-weight: 300;
+      color: var(--white); margin: 1.5rem 0 2.5rem; line-height: 1.4;
+    }
+    .declaration .tagline em { font-style: italic; color: var(--gold); }
+    .cta-btn {
+      display: inline-block; padding: 0.9rem 2.8rem;
+      border: 1px solid rgba(200,169,110,0.35); color: var(--gold);
+      font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
+      text-decoration: none; transition: all 0.3s;
+    }
+    .cta-btn:hover { background: rgba(200,169,110,0.08); border-color: var(--gold); }
+
+    .divider { width: 36px; height: 1px; background: var(--gold-dim); margin: 5rem auto; opacity: 0.4; }
+
+    footer {
+      border-top: 1px solid rgba(200,169,110,0.07);
+      padding: 2rem 3rem;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    footer p { font-size: 0.65rem; color: var(--text-dim); letter-spacing: 0.08em; }
+
+    @media (max-width: 768px) {
+      nav { padding: 1.2rem 1.5rem; }
+      .hero { padding: 7rem 1.5rem 3.5rem; }
+      .content { padding: 0 1.5rem 5rem; }
+      .state-grid { grid-template-columns: repeat(3, 1fr); }
+      .sound-state { min-width: 130px; font-size: 0.78rem; }
+      footer { flex-direction: column; gap: 0.6rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="https://www.fiveresonance.com">Five Resonance</a>
+  <ul class="nav-links">
+    <li><a href="https://www.fiveresonance.com">Home</a></li>
+    <li><a href="#" class="active">About</a></li>
+    <li><a href="https://www.youtube.com/@five_resonance" target="_blank">YouTube</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-eyebrow">About Five Resonance</p>
+  <h1 class="hero-question">
+    音楽を「選ぶ」とき、<br /><em>何を選んでいるのか。</em>
+  </h1>
+  <p class="hero-sub">
+    睡眠用、集中用、リラックス用。<br />
+    でも、なんとなく合わない、と感じたことはないだろうか。
+  </p>
+</section>
+
+<main class="content">
+
+  <!-- 01 -->
+  <div class="prose-block">
+    <span class="eyebrow">The Problem</span>
+    <h2>「今日の自分」は、毎日変わる</h2>
+    <p>
+      考えすぎて止まらない日がある。<br />
+      やる気が出なくて、動けない日がある。<br />
+      心が冷えていて、何も感じられない日がある。<br />
+      気持ちが揺れていて、落ち着かない日がある。<br />
+      頭がこんがらがっていて、整理できない日がある。
+    </p>
+    <p>
+      これらは、すべて「疲れている」という一言では括れない。
+      それぞれ、<strong>まったく異なる状態</strong>だ。
+      そして、それぞれの状態に必要な音楽は、違う。
+    </p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- 02 -->
+  <div class="prose-block">
+    <span class="eyebrow">Philosophy</span>
+    <h2>「今日の自分」を読む、古い思想</h2>
+    <p>
+      東洋医学と四柱推命の世界には、「五行」という設計思想がある。
+      この五つの元素は、自然界の現象だけでなく、人間の体と心の状態を記述するための言語だ。
+    </p>
+    <p>
+      五行を、私たちは「タイプ分け」のためには使わない。<br />
+      <strong>「今日の自分に、何が必要か」を見つめるために使う。</strong>
+    </p>
+
+    <table class="gogyou-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>元素</th>
+          <th>エネルギーの性質</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="td-kanji" style="color:#a8c4a0;">木</td>
+          <td class="td-name">もく</td>
+          <td class="td-desc">成長、前進、生命力</td>
+        </tr>
+        <tr>
+          <td class="td-kanji" style="color:#e8a070;">火</td>
+          <td class="td-name">か</td>
+          <td class="td-desc">温もり、活力、つながり</td>
+        </tr>
+        <tr>
+          <td class="td-kanji" style="color:#c8b878;">土</td>
+          <td class="td-name">ど</td>
+          <td class="td-desc">安定、安着、中心</td>
+        </tr>
+        <tr>
+          <td class="td-kanji" style="color:#a8b4c8;">金</td>
+          <td class="td-name">きん</td>
+          <td class="td-desc">明晰、輪郭、澄んだ意識</td>
+        </tr>
+        <tr>
+          <td class="td-kanji" style="color:#99d9ff;">水</td>
+          <td class="td-name">すい</td>
+          <td class="td-desc">深い休息、静けさ、流れ</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- 03 -->
+  <div class="prose-block">
+    <span class="eyebrow">Sound Design</span>
+    <h2>五行を、音のかたちへ</h2>
+    <p>
+      五行の各元素は、それぞれ固有の「音のかたち」を宿しているのではないか——その仮説から始まった。
+      スペクトル分析とリズム解析を用いて、元素ごとに異なる音響指標を特定した。
+    </p>
+    <p>
+      例えば、<strong>水（Water）</strong>は——スペクトル重心が低く（暗く、深い音）、
+      リズムが最も不規則で（水は定まった道を流れない）、
+      ダイナミクスが波のように起伏する。
+    </p>
+    <p>
+      それは、五行という古い概念を、音響という別の言語で読み直す試みだ。
+    </p>
+
+    <div class="state-grid">
+      <div class="state-card el-water">
+        <span class="state-kanji">水</span>
+        <span class="state-name">Water</span>
+        <span class="state-keyword">雨の窓</span>
+        <span class="state-desc">低い重心・不規則なリズム・波状のダイナミクス</span>
+        <span class="state-rec">深い休息・静けさ</span>
+      </div>
+      <div class="state-card el-wood">
+        <span class="state-kanji">木</span>
+        <span class="state-name">Wood</span>
+        <span class="state-keyword">芽吹き</span>
+        <span class="state-desc">高揚するダイナミクス・成長する音層・前進の方向性</span>
+        <span class="state-rec">生命力・前進</span>
+      </div>
+      <div class="state-card el-fire">
+        <span class="state-kanji">火</span>
+        <span class="state-name">Fire</span>
+        <span class="state-keyword">灯り</span>
+        <span class="state-desc">高い周波数重心・強いリズムアクセント・発散するエネルギー</span>
+        <span class="state-rec">温もり・活力</span>
+      </div>
+      <div class="state-card el-earth">
+        <span class="state-kanji">土</span>
+        <span class="state-name">Earth</span>
+        <span class="state-keyword">落ち着き</span>
+        <span class="state-desc">密度ある和声・平坦なダイナミクス・安定した重心</span>
+        <span class="state-rec">安定・中心</span>
+      </div>
+      <div class="state-card el-metal">
+        <span class="state-kanji">金</span>
+        <span class="state-name">Metal</span>
+        <span class="state-keyword">白い空気</span>
+        <span class="state-desc">最も規則正しいリズム・対位法的構造・透明な空間</span>
+        <span class="state-rec">明晰・輪郭</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- 04 -->
+  <div class="prose-block">
+    <span class="eyebrow">Lineage</span>
+    <h2>80年代日本の環境音楽との接点</h2>
+    <div class="kankyou-block">
+      <span class="artists">吉村弘、高田みどり、芦川聡。</span>
+      <p>
+        1980年代の日本に生まれた環境音楽（Kankyō Ongaku）は、
+        「人間の状態に作用する音楽」という思想を先取りしていた。
+        BGMではなく、空間そのものを変える音楽。
+        聴かせるのではなく、<strong>存在させる音楽</strong>。
+      </p>
+    </div>
+    <p>
+      Five Resonanceは、この思想に触発されている。<br />
+      ただし、ひとつ違う方向を向いている。
+    </p>
+    <p>
+      環境音楽が「場所」に作用しようとしたとすれば、<br />
+      Five Resonanceは<strong>「今日のあなたの状態」</strong>に作用しようとする。
+    </p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- 05 -->
+  <div class="prose-block">
+    <span class="eyebrow">Today's Sound</span>
+    <h2>今日の状態から、音を選ぶ</h2>
+    <p>占いではない。処方でもない。</p>
+    <p>
+      今日の自分の状態に気づき、それに合う音を選ぶ。<br />
+      そのための仕組みを、私たちは丁寧に設計した。
+    </p>
+
+    <div class="sound-select">
+      <div class="sound-row">
+        <span class="sound-state">考えが止まらない夜なら</span>
+        <span class="sound-arrow">→</span>
+        <span class="sound-element">水（すい）を</span>
+        <span class="sound-feel">深く、ゆったりと</span>
+      </div>
+      <div class="sound-row">
+        <span class="sound-state">動き出せない朝なら</span>
+        <span class="sound-arrow">→</span>
+        <span class="sound-element">木（もく）を</span>
+        <span class="sound-feel">広がりながら、前へ</span>
+      </div>
+      <div class="sound-row">
+        <span class="sound-state">心が冷えているなら</span>
+        <span class="sound-arrow">→</span>
+        <span class="sound-element">火（か）を</span>
+        <span class="sound-feel">温かく、脈打つように</span>
+      </div>
+      <div class="sound-row">
+        <span class="sound-state">気持ちが揺れているなら</span>
+        <span class="sound-arrow">→</span>
+        <span class="sound-element">土（ど）を</span>
+        <span class="sound-feel">静かに、どっしりと</span>
+      </div>
+      <div class="sound-row">
+        <span class="sound-state">頭がこんがらがっているなら</span>
+        <span class="sound-arrow">→</span>
+        <span class="sound-element">金（きん）を</span>
+        <span class="sound-feel">澄んで、くっきりと</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CLOSING -->
+  <div class="declaration">
+    <p>音のふるまいから五行を設計する</p>
+    <div class="tagline">
+      水・木・火・土・金。<br />
+      <em>五つの音楽が、今日からはじまる。</em>
+    </div>
+    <a class="cta-btn" href="https://www.fiveresonance.com">共鳴を体験する →</a>
+  </div>
+
+</main>
+
+<footer>
+  <p>© 2026 Five Resonance</p>
+  <p style="font-family:var(--font-jp); font-weight:200; letter-spacing:0.06em; font-size:0.72rem;">五行で読み解く、音の設計。</p>
+</footer>
+
+</body>
+</html>

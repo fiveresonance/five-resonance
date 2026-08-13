@@ -1,6 +1,7 @@
 """
 api/index.py — Five Resonance API 라우터 (Vercel entrypoint)
 GET /        → index.html 서빙
+GET /about   → about.html 서빙
 POST /api/innate       → innate 분석
 POST /api/compatibility → 궁합 분석
 """
@@ -13,9 +14,10 @@ sys.path.insert(0, str(Path(__file__).parent))
 from innate import handler as InnateHandler
 from compatibility import handler as CompatHandler
 
-# index.html 경로
+# 정적 파일 경로
 ROOT = Path(__file__).parent.parent
 INDEX_HTML = ROOT / "index.html"
+ABOUT_HTML = ROOT / "about.html"
 
 
 class handler(BaseHTTPRequestHandler):
@@ -26,6 +28,8 @@ class handler(BaseHTTPRequestHandler):
 
         if path == '' or path == '/':
             self._serve_file(INDEX_HTML, 'text/html; charset=utf-8')
+        elif path == '/about':
+            self._serve_file(ABOUT_HTML, 'text/html; charset=utf-8')
         else:
             self._json(404, {"error": "Not found"})
 
