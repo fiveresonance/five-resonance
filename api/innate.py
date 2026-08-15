@@ -9,6 +9,108 @@ import json, os, sys
 from datetime import datetime
 from pathlib import Path
 
+# ── 3-Layer DB 로드 ───────────────────────────────────────
+_DB_PATH = Path(__file__).parent.parent / "five_resonance_db_jp.json"
+try:
+    with open(_DB_PATH, encoding="utf-8") as _f:
+        _LAYER_DB = json.load(_f)
+except Exception:
+    _LAYER_DB = {}
+
+# 일간 한자 → DB 키 매핑
+_GAN_TO_KEY = {
+    "甲": "갑목", "乙": "을목", "丙": "병화", "丁": "정화", "戊": "무토",
+    "己": "기토", "庚": "경금", "辛": "신금", "壬": "임수", "癸": "계수",
+}
+
+# 월지 → 계절 키 매핑
+_ZHI_TO_SEASON = {
+    "寅": "봄", "卯": "봄", "辰": "봄",
+    "巳": "여름", "午": "여름", "未": "여름",
+    "申": "가을", "酉": "가을", "戌": "가을",
+    "亥": "겨울", "子": "겨울", "丑": "겨울",
+}
+
+# 오행 부족 키 매핑
+_LACK_KEY = {
+    "wood": "목부족", "fire": "화부족", "earth": "토부족",
+    "metal": "금부족", "water": "수부족",
+}
+
+# 오행 과다 키 매핑
+_EXCESS_KEY = {
+    "wood": "목과다", "fire": "화과다", "earth": "토과다",
+    "metal": "금과다", "water": "수과다",
+}
+
+# Layer3 원소 키 매핑
+_ELEMENT_L3 = {
+    "wood": "목", "fire": "화", "earth": "토",
+    "metal": "금", "water": "수",
+}
+
+
+def build_layer_texts(pillars: dict, model_data: dict) -> dict:
+    """
+    일간 × 계절 × 오행 분포 → 3-Layer 텍스트 조합
+    반환: { "layer1": str, "layer2": str, "layer3": str }
+    """
+    if not _LAYER_DB:
+        return {}
+
+    # Layer 1: 일간 × 계절
+    day_gan = pillars.get("day", {}).get("gan", "")
+    month_zhi = pillars.get("month", {}).get("zhi", "")
+    stem_key   = _GAN_TO_KEY.get(day_gan, "")
+    season_key = _ZHI_TO_SEASON.get(month_zhi, "")
+
+    layer1_text = ""
+    if stem_key and season_key:
+        layer1_text = (_LAYER_DB
+                       .get("layer1", {})
+                       .get(stem_key, {})
+                       .get(season_key, ""))
+
+    # Layer 2: 부족 × 과다 오행 판단
+    vector = model_data.get("vector", {})  # {"wood": 0.2, "fire": 0.1, ...}
+    layer2_text = ""
+    if vector:
+        sorted_el = sorted(vector.items(), key=lambda x: x[1])
+        lack_el   = sorted_el[0][0]   # 가장 적은 원소
+        excess_el = sorted_el[-1][0]  # 가장 많은 원소
+
+        lack_key   = _LACK_KEY.get(lack_el, "")
+        excess_key = _EXCESS_KEY.get(excess_el, "")
+
+        if lack_key and excess_key:
+            layer2_text = (_LAYER_DB
+                           .get("layer2", {})
+                           .get(lack_key, {})
+                           .get(excess_key, ""))
+
+    # Layer 3: 부족 원소 음악 처방
+    layer3_text = ""
+    if vector:
+        sorted_el = sorted(vector.items(), key=lambda x: x[1])
+        lack_el   = sorted_el[0][0]
+        l3_key    = _ELEMENT_L3.get(lack_el, "")
+        if l3_key:
+            layer3_text = _LAYER_DB.get("layer3", {}).get(l3_key, "")
+
+    return {
+        "layer1": layer1_text,
+        "layer2": layer2_text,
+        "layer3": layer3_text,
+        "debug": {
+            "day_gan": day_gan,
+            "month_zhi": month_zhi,
+            "stem_key": stem_key,
+            "season_key": season_key,
+            "lack_element": lack_el if vector else "",
+            "excess_element": excess_el if vector else "",
+        }
+    }
+
 sys.path.insert(0, str(Path(__file__).parent))
 from manse import get_exact_four_pillars, JST
 from five_elements import build_element_vector
@@ -192,11 +294,15 @@ class handler(BaseHTTPRequestHandler):
                 gemini_input["sound_direction"]   = sound_focus["sound_direction"]
             reading = gemini_narrate(gemini_input, lang)
 
+            # 5. 3-Layer DB 텍스트 조합
+            layer_texts = build_layer_texts(pillars, model_data)
+
             self._json(200, {
                 "pillars":     pillars,
                 "model_data":  model_data,
                 "sound_focus": sound_focus,
                 "reading":     reading,
+                "layer_texts": layer_texts,
             })
 
         except KeyError as e:
