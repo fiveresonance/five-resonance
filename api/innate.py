@@ -9,6 +9,12 @@ import json, os, sys
 from datetime import datetime
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).parent))
+from manse import get_exact_four_pillars, JST
+from five_elements import build_element_vector
+from resonance_engine import calculate_final_sound_focus
+import google.generativeai as genai
+
 # ── 3-Layer DB 로드 ───────────────────────────────────────
 _DB_PATH = Path(__file__).parent.parent / "five_resonance_db_jp.json"
 try:
@@ -17,105 +23,53 @@ try:
 except Exception:
     _LAYER_DB = {}
 
-# 일간 한자 → DB 키 매핑
 _GAN_TO_KEY = {
     "甲": "갑목", "乙": "을목", "丙": "병화", "丁": "정화", "戊": "무토",
     "己": "기토", "庚": "경금", "辛": "신금", "壬": "임수", "癸": "계수",
 }
-
-# 월지 → 계절 키 매핑
 _ZHI_TO_SEASON = {
     "寅": "봄", "卯": "봄", "辰": "봄",
     "巳": "여름", "午": "여름", "未": "여름",
     "申": "가을", "酉": "가을", "戌": "가을",
     "亥": "겨울", "子": "겨울", "丑": "겨울",
 }
-
-# 오행 부족 키 매핑
-_LACK_KEY = {
-    "wood": "목부족", "fire": "화부족", "earth": "토부족",
-    "metal": "금부족", "water": "수부족",
-}
-
-# 오행 과다 키 매핑
-_EXCESS_KEY = {
-    "wood": "목과다", "fire": "화과다", "earth": "토과다",
-    "metal": "금과다", "water": "수과다",
-}
-
-# Layer3 원소 키 매핑
-_ELEMENT_L3 = {
-    "wood": "목", "fire": "화", "earth": "토",
-    "metal": "금", "water": "수",
-}
+_LACK_KEY  = {"wood":"목부족","fire":"화부족","earth":"토부족","metal":"금부족","water":"수부족"}
+_EXCESS_KEY = {"wood":"목과다","fire":"화과다","earth":"토과다","metal":"금과다","water":"수과다"}
+_ELEMENT_L3 = {"wood":"목","fire":"화","earth":"토","metal":"금","water":"수"}
 
 
 def build_layer_texts(pillars: dict, model_data: dict) -> dict:
-    """
-    일간 × 계절 × 오행 분포 → 3-Layer 텍스트 조합
-    반환: { "layer1": str, "layer2": str, "layer3": str }
-    """
     if not _LAYER_DB:
         return {}
-
-    # Layer 1: 일간 × 계절
-    day_gan = pillars.get("day", {}).get("gan", "")
-    month_zhi = pillars.get("month", {}).get("zhi", "")
+    day_gan    = pillars.get("day", {}).get("gan", "")
+    month_zhi  = pillars.get("month", {}).get("zhi", "")
     stem_key   = _GAN_TO_KEY.get(day_gan, "")
     season_key = _ZHI_TO_SEASON.get(month_zhi, "")
-
-    layer1_text = ""
-    if stem_key and season_key:
-        layer1_text = (_LAYER_DB
-                       .get("layer1", {})
-                       .get(stem_key, {})
-                       .get(season_key, ""))
-
-    # Layer 2: 부족 × 과다 오행 판단
-    vector = model_data.get("vector", {})  # {"wood": 0.2, "fire": 0.1, ...}
-    layer2_text = ""
+    layer1_text = (_LAYER_DB.get("layer1", {}).get(stem_key, {}).get(season_key, "")
+                   if stem_key and season_key else "")
+    vector = model_data.get("vector", {})
+    lack_el = excess_el = ""
+    layer2_text = layer3_text = ""
     if vector:
-        sorted_el = sorted(vector.items(), key=lambda x: x[1])
-        lack_el   = sorted_el[0][0]   # 가장 적은 원소
-        excess_el = sorted_el[-1][0]  # 가장 많은 원소
-
+        sorted_el  = sorted(vector.items(), key=lambda x: x[1])
+        lack_el    = sorted_el[0][0]
+        excess_el  = sorted_el[-1][0]
         lack_key   = _LACK_KEY.get(lack_el, "")
         excess_key = _EXCESS_KEY.get(excess_el, "")
-
         if lack_key and excess_key:
-            layer2_text = (_LAYER_DB
-                           .get("layer2", {})
-                           .get(lack_key, {})
-                           .get(excess_key, ""))
-
-    # Layer 3: 부족 원소 음악 처방
-    layer3_text = ""
-    if vector:
-        sorted_el = sorted(vector.items(), key=lambda x: x[1])
-        lack_el   = sorted_el[0][0]
-        l3_key    = _ELEMENT_L3.get(lack_el, "")
+            layer2_text = _LAYER_DB.get("layer2", {}).get(lack_key, {}).get(excess_key, "")
+        l3_key = _ELEMENT_L3.get(lack_el, "")
         if l3_key:
             layer3_text = _LAYER_DB.get("layer3", {}).get(l3_key, "")
-
     return {
         "layer1": layer1_text,
         "layer2": layer2_text,
         "layer3": layer3_text,
-        "debug": {
-            "day_gan": day_gan,
-            "month_zhi": month_zhi,
-            "stem_key": stem_key,
-            "season_key": season_key,
-            "lack_element": lack_el if vector else "",
-            "excess_element": excess_el if vector else "",
-        }
+        "debug":  {"day_gan": day_gan, "month_zhi": month_zhi,
+                   "stem_key": stem_key, "season_key": season_key,
+                   "lack_element": lack_el, "excess_element": excess_el},
     }
 
-sys.path.insert(0, str(Path(__file__).parent))
-from manse import get_exact_four_pillars, JST
-from five_elements import build_element_vector
-from resonance_engine import calculate_final_sound_focus
-import google.generativeai as genai
 
 # ── Gemini 프롬프트 (언어화 전용) ─────────────────────────
 
@@ -244,12 +198,59 @@ def gemini_narrate(model_data: dict, lang: str) -> dict:
     if brace > 0:
         raw = raw[brace:]
 
-    # 3. 파싱 시도 (실패 시 재시도)
-    try:
+    # 3. JSON 값 내부 큰따옴표 교정 (Gemini가 프롬프트 규칙 무시하는 경우 대응)
+    def sanitize_json_string_values(s: str) -> str:
+        """JSON 문자열 값 내부의 naked 큰따옴표를 「」로 교체"""
+        import re as _re2
+        # 문자열 값 안의 큰따옴표: ": "...값..." 패턴에서 값 내부만 처리
+        # 방법: 전체를 문자 단위로 순회하며 문자열 컨텍스트 추적
+        result = []
+        in_string = False
+        escape_next = False
+        key_or_value = False  # True=값 위치
+
+        i = 0
+        while i < len(s):
+            c = s[i]
+            if escape_next:
+                result.append(c)
+                escape_next = False
+            elif c == '\\' and in_string:
+                result.append(c)
+                escape_next = True
+            elif c == '"':
+                if not in_string:
+                    in_string = True
+                    result.append(c)
+                else:
+                    in_string = False
+                    result.append(c)
+            else:
+                result.append(c)
+            i += 1
+        return ''.join(result)
+
+    # 3. 파싱 시도 → 실패 시 큰따옴표 교정 후 재시도
+    def try_parse(raw_str: str):
         decoder = json.JSONDecoder()
-        obj, _ = decoder.raw_decode(raw)
-    except json.JSONDecodeError as e:
-        raise ValueError(f"Gemini JSON parse error at char {e.pos}: {e.msg} | raw={raw[:200]}")
+        obj, _ = decoder.raw_decode(raw_str)
+        return obj
+
+    try:
+        obj = try_parse(raw)
+    except json.JSONDecodeError:
+        # 값 내부의 bare 큰따옴표를 일본어 괄호로 교체하는 정규식 방식
+        import re as _re2
+        # 패턴: JSON 키-값에서 값 문자열 안에 있는 큰따옴표만 교체
+        # 전략: ": "로 시작하는 문자열 값에서 종료 따옴표 전까지의 " 를 「」로
+        def fix_inner_quotes(m):
+            inner = m.group(1).replace('"', '「').replace('"', '」')
+            return ': "' + inner + '"'
+        fixed = _re2.sub(r':\s*"(.*?)"(?=\s*[,}])', fix_inner_quotes, raw, flags=_re2.DOTALL)
+        try:
+            obj = try_parse(fixed)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Gemini JSON parse error at char {e.pos}: {e.msg} | raw={raw[:300]}")
 
     # 4. 일본어 후처리
     if lang == "jp":
@@ -294,7 +295,7 @@ class handler(BaseHTTPRequestHandler):
                 gemini_input["sound_direction"]   = sound_focus["sound_direction"]
             reading = gemini_narrate(gemini_input, lang)
 
-            # 5. 3-Layer DB 텍스트 조합
+            # 5. 3-Layer DB 텍스트
             layer_texts = build_layer_texts(pillars, model_data)
 
             self._json(200, {
