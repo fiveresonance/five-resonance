@@ -37,16 +37,36 @@ _LACK_KEY  = {"wood":"목부족","fire":"화부족","earth":"토부족","metal":
 _EXCESS_KEY = {"wood":"목과다","fire":"화과다","earth":"토과다","metal":"금과다","water":"수과다"}
 _ELEMENT_L3 = {"wood":"목","fire":"화","earth":"토","metal":"금","water":"수"}
 
+# 시간(時干) → DB 키 매핑 (Layer 1.5)
+_HOUR_GAN_TO_KEY = {
+    "甲": "갑목", "乙": "을목", "丙": "병화", "丁": "정화", "戊": "무토",
+    "己": "기토", "庚": "경금", "辛": "신금", "壬": "임수", "癸": "계수",
+}
+
 
 def build_layer_texts(pillars: dict, model_data: dict) -> dict:
     if not _LAYER_DB:
         return {}
+
+    # Layer 1: 일간 × 계절
     day_gan    = pillars.get("day", {}).get("gan", "")
     month_zhi  = pillars.get("month", {}).get("zhi", "")
     stem_key   = _GAN_TO_KEY.get(day_gan, "")
     season_key = _ZHI_TO_SEASON.get(month_zhi, "")
     layer1_text = (_LAYER_DB.get("layer1", {}).get(stem_key, {}).get(season_key, "")
                    if stem_key and season_key else "")
+
+    # Layer 1.5: 시간(時干) — 시주 입력 시에만
+    hour_pillar = pillars.get("hour")
+    layer1_5_text = ""
+    hour_gan = ""
+    if hour_pillar:
+        hour_gan    = hour_pillar.get("gan", "")
+        hour_key    = _HOUR_GAN_TO_KEY.get(hour_gan, "")
+        if hour_key:
+            layer1_5_text = _LAYER_DB.get("layer1_5", {}).get(hour_key, "")
+
+    # Layer 2: 부족 × 과다 (시주 있으면 8글자 기준, 없으면 6글자)
     vector = model_data.get("vector", {})
     lack_el = excess_el = ""
     layer2_text = layer3_text = ""
@@ -61,13 +81,17 @@ def build_layer_texts(pillars: dict, model_data: dict) -> dict:
         l3_key = _ELEMENT_L3.get(lack_el, "")
         if l3_key:
             layer3_text = _LAYER_DB.get("layer3", {}).get(l3_key, "")
+
     return {
-        "layer1": layer1_text,
-        "layer2": layer2_text,
-        "layer3": layer3_text,
-        "debug":  {"day_gan": day_gan, "month_zhi": month_zhi,
-                   "stem_key": stem_key, "season_key": season_key,
-                   "lack_element": lack_el, "excess_element": excess_el},
+        "layer1":   layer1_text,
+        "layer1_5": layer1_5_text,   # 시주 있으면 텍스트, 없으면 ""
+        "layer2":   layer2_text,
+        "layer3":   layer3_text,
+        "has_hour": bool(hour_pillar),
+        "debug":    {"day_gan": day_gan, "month_zhi": month_zhi,
+                     "hour_gan": hour_gan,
+                     "stem_key": stem_key, "season_key": season_key,
+                     "lack_element": lack_el, "excess_element": excess_el},
     }
 
 
@@ -172,6 +196,13 @@ def clean_japanese_text(text: str) -> str:
     text = text.replace("静音音楽", "静かな音楽")
     text = text.replace("静音アンビエント", "静穏なアンビエント")
     text = text.replace("静音", "静穏")
+    # balance_note 교정 추가
+    text = text.replace("際立つ気配があります", "感じられます")
+    text = text.replace("求められています", "整えていくとよいでしょう")
+    text = text.replace("不足している温かな火のエネルギーを補い", "足りない火の温かさを取り入れることで")
+    text = text.replace("計画の深さがあります", "じっくり計画を練る方です")
+    text = text.replace("生気を再び感じる", "活力をもう一度感じる")
+    text = text.replace("温かみのある暖色系の音色", "温かみのある音色")
     return text
 
 

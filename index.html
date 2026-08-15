@@ -84,6 +84,8 @@
   .quiz-opt.selected { border-color:var(--gold); background:rgba(201,169,110,0.06); }
 
   /* RESULT */
+  #ir-layer1, #ir-layer2, #ir-layer3 { -webkit-user-select:text; user-select:text; }
+  #ir-layer1 a, #ir-layer2 a, #ir-layer3 a { color:inherit !important; text-decoration:none !important; pointer-events:none; }
   #result-section { display:none; padding:100px 24px; max-width:640px; margin:0 auto; text-align:center; }
   #result-section.show { display:block; }
   .result-element-circle { width:120px; height:120px; border-radius:50%; margin:0 auto 24px; display:flex; align-items:center; justify-content:center; animation:pulse-result 2s ease-in-out infinite; }
@@ -463,21 +465,32 @@
       <div style="margin-bottom:24px;">
         <div style="font-size:10px;letter-spacing:0.28em;text-transform:uppercase;color:var(--gold);opacity:0.7;margin-bottom:14px;"
           data-jp="あなたという人" data-ko="타고난 결" data-en="Your Nature">あなたという人</div>
-        <div id="ir-layer1" style="font-size:13px;color:rgba(247,244,238,0.85);line-height:2.1;font-family:'Noto Serif JP',serif;font-weight:200;"></div>
+        <div id="ir-layer1" style="font-size:13px;color:rgba(247,244,238,0.85);line-height:2.1;font-family:'Noto Serif JP',serif;font-weight:200;-webkit-text-fill-color:rgba(247,244,238,0.85);"></div>
+      </div>
+
+      <!-- Layer 1.5: 행동 방식 (시주 입력 시에만 표시) -->
+      <div id="ir-layer1_5-wrap" style="display:none;margin-bottom:24px;padding:20px 24px;background:rgba(247,244,238,0.02);border:1px solid rgba(247,244,238,0.08);">
+        <div style="font-size:10px;letter-spacing:0.28em;text-transform:uppercase;color:var(--gold);opacity:0.7;margin-bottom:12px;"
+          data-jp="あなたの動き方" data-ko="행동 방식" data-en="How You Act">あなたの動き方</div>
+        <div id="ir-layer1_5" style="font-size:13px;color:rgba(247,244,238,0.8);line-height:2.0;font-family:'Noto Serif JP',serif;font-weight:200;-webkit-text-fill-color:rgba(247,244,238,0.8);"></div>
+        <div style="margin-top:10px;font-size:10px;color:rgba(247,244,238,0.2);letter-spacing:0.06em;"
+          data-jp="時干から導かれる、外に現れる行動の傾向" data-ko="시간에서 도출된 외부 행동 성향" data-en="Behavioral tendency derived from hour pillar">時干から導かれる、外に現れる行動の傾向</div>
       </div>
 
       <!-- Layer 2: 현재 패턴 -->
       <div style="margin-bottom:24px;padding:20px 24px;background:rgba(247,244,238,0.03);border-left:2px solid rgba(201,169,110,0.3);">
         <div style="font-size:10px;letter-spacing:0.28em;text-transform:uppercase;color:var(--gold);opacity:0.7;margin-bottom:12px;"
           data-jp="今のあなたのパターン" data-ko="현재의 패턴" data-en="Current Pattern">今のあなたのパターン</div>
-        <div id="ir-layer2" style="font-size:13px;color:rgba(247,244,238,0.75);line-height:2.0;font-family:'Noto Serif JP',serif;font-weight:200;"></div>
+        <div id="ir-layer2" style="font-size:13px;color:rgba(247,244,238,0.75);line-height:2.0;font-family:'Noto Serif JP',serif;font-weight:200;-webkit-text-fill-color:rgba(247,244,238,0.75);"></div>
       </div>
 
       <!-- Layer 3: 음악 처방 + 버튼 -->
       <div style="padding:20px 24px;border:1px solid rgba(201,169,110,0.25);background:rgba(201,169,110,0.04);margin-bottom:8px;">
         <div style="font-size:10px;letter-spacing:0.28em;text-transform:uppercase;color:var(--gold);opacity:0.7;margin-bottom:12px;"
           data-jp="今日の音" data-ko="오늘의 소리" data-en="Your Sound Today">今日の音</div>
-        <div id="ir-layer3" style="font-size:13px;color:rgba(247,244,238,0.85);line-height:2.0;font-family:'Noto Serif JP',serif;font-weight:200;margin-bottom:16px;"></div>
+        <div id="ir-layer3" style="font-size:13px;color:rgba(247,244,238,0.85);line-height:2.0;font-family:'Noto Serif JP',serif;font-weight:200;margin-bottom:16px;-webkit-text-fill-color:rgba(247,244,238,0.85);"></div>
+        <!-- 부족 원소 → 음악 연결 안내 -->
+        <div id="ir-listen-intro" style="font-size:11px;letter-spacing:0.1em;color:rgba(247,244,238,0.35);margin-bottom:10px;"></div>
         <!-- 음악 링크 버튼 -->
         <div id="ir-listen" style="display:flex;gap:10px;flex-wrap:wrap;"></div>
       </div>
@@ -816,19 +829,29 @@
     document.getElementById('ir-balance').textContent  = r.balance_note || '';
     document.getElementById('ir-music').textContent    = '♪ ' + (r.music_guidance || '');
 
-    // 오행 분포 바
+    // 오행 분포 바 (부족/충분 표시 추가)
     const dist = d.model_data ? d.model_data.vector : d.distribution;
     const total = Object.values(dist).reduce((a,b)=>a+b,0);
     const distEl = document.getElementById('ir-dist');
-    distEl.innerHTML = Object.entries(dist).map(([el, cnt]) =>
-      `<div style="display:flex;align-items:center;gap:12px;">
-        <span style="font-family:'Noto Serif JP',serif;color:${EL_COLOR[el]};width:20px;text-align:center">${EL_KANJI[el]}</span>
-        <div style="flex:1;height:4px;background:rgba(247,244,238,0.1);border-radius:2px;">
-          <div style="height:4px;width:${Math.round(cnt/total*100)}%;background:${EL_COLOR[el]};border-radius:2px;transition:width 0.8s;"></div>
-        </div>
-        <span style="font-size:11px;color:rgba(247,244,238,0.4);min-width:16px;">${cnt}</span>
-      </div>`
-    ).join('');
+    const BALANCE_MARK = 20.0;
+    // 부족 레이블
+    const lackLabel = { jp:'不足', ko:'부족', en:'low' };
+    distEl.innerHTML = Object.entries(dist)
+      .sort((a,b) => a[1]-b[1])  // 부족한 순서대로 표시
+      .map(([el, cnt]) => {
+        const isLack = cnt < BALANCE_MARK;
+        const tag = isLack
+          ? `<span style="font-size:10px;letter-spacing:0.08em;color:${EL_COLOR[el]};opacity:0.8;">${lackLabel[currentLang]||lackLabel.jp}</span>`
+          : '';
+        return `<div style="display:flex;align-items:center;gap:12px;">
+          <span style="font-family:'Noto Serif JP',serif;color:${EL_COLOR[el]};width:20px;text-align:center">${EL_KANJI[el]}</span>
+          <div style="flex:1;height:4px;background:rgba(247,244,238,0.1);border-radius:2px;">
+            <div style="height:4px;width:${Math.round(cnt/total*100)}%;background:${EL_COLOR[el]};border-radius:2px;transition:width 0.8s;"></div>
+          </div>
+          ${tag}
+          <span style="font-size:11px;color:rgba(247,244,238,0.4);min-width:28px;text-align:right;">${cnt}</span>
+        </div>`;
+      }).join('');
 
     // 음악 링크 버튼 — 부족한 원소 기준 (보충 로직)
     const vec = d.model_data ? d.model_data.vector : {};
@@ -839,7 +862,6 @@
     let recommend = [];
     if (d.sound_focus && d.sound_focus.primary_sound) {
       recommend.push(d.sound_focus.primary_sound);
-      // secondary: 부족량 2위 (primary 제외)
       const sec = deficiency.filter(([el]) => el !== d.sound_focus.primary_sound)
                             .sort((a,b) => b[1]-a[1])[0];
       if (sec && sec[1] > 0) recommend.push(sec[0]);
@@ -850,22 +872,44 @@
     }
     const listenDiv = document.getElementById('ir-listen');
     listenDiv.innerHTML = '';
+
+    // Layer3 → 음악 연결 안내 (4번 수정)
+    const introEl = document.getElementById('ir-listen-intro');
+    if (introEl && recommend.length > 0) {
+      const introText = {
+        jp: `不足している${EL_KANJI[recommend[0]]}のエネルギーを音で補う`,
+        ko: `부족한 ${EL_KANJI[recommend[0]]} 에너지를 소리로 채우기`,
+        en: `Fill the missing ${recommend[0]} energy through sound`,
+      };
+      introEl.textContent = '▸ ' + (introText[currentLang] || introText.jp);
+    }
+
+    // 버튼 레이블 — 역할 명확화 (4번, 5번 수정)
     const btnLabels = {
-      jp: ['今すぐ聴く', 'あわせて聴く'],
-      ko: ['지금 듣기', '함께 듣기'],
-      en: ['Listen Now', 'Also Listen']
+      jp: [
+        (el) => `${EL_KANJI[el]} を聴く`,
+        (el) => `${EL_KANJI[el]} もう一つ聴く`,
+      ],
+      ko: [
+        (el) => `${EL_KANJI[el]} 듣기`,
+        (el) => `${EL_KANJI[el]} 하나 더 듣기`,
+      ],
+      en: [
+        (el) => `Listen ${EL_KANJI[el]}`,
+        (el) => `Also ${EL_KANJI[el]}`,
+      ],
     };
     recommend.forEach((el, i) => {
       const d2 = elementData[el];
       if (!d2 || !d2.yt) return;
-      const label = btnLabels[currentLang] || btnLabels.jp;
+      const labelFn = (btnLabels[currentLang] || btnLabels.jp)[i];
       const btn = document.createElement('a');
       btn.href = d2.yt;
       btn.target = '_blank';
-      btn.style.cssText = `display:inline-flex;align-items:center;gap:8px;border:1px solid ${EL_COLOR[el]}44;color:${EL_COLOR[el]};padding:10px 20px;font-size:11px;letter-spacing:0.12em;text-decoration:none;transition:all 0.3s;`;
+      btn.style.cssText = `display:inline-flex;align-items:center;gap:8px;border:1px solid ${EL_COLOR[el]}44;color:${EL_COLOR[el]};padding:10px 20px;font-size:11px;letter-spacing:0.1em;text-decoration:none;transition:all 0.3s;`;
       btn.onmouseover = () => { btn.style.background = EL_COLOR[el]+'22'; };
       btn.onmouseout  = () => { btn.style.background = 'transparent'; };
-      btn.innerHTML = `<span style="font-family:'Noto Serif JP',serif;font-size:16px;">${EL_KANJI[el]}</span> ${label[i]}`;
+      btn.textContent = labelFn(el);
       listenDiv.appendChild(btn);
     });
 
@@ -875,6 +919,16 @@
       document.getElementById('ir-layer1').textContent = lt.layer1 || '';
       document.getElementById('ir-layer2').textContent = lt.layer2 || '';
       document.getElementById('ir-layer3').textContent = lt.layer3 || '';
+
+      // Layer 1.5: 시주 입력 시에만 표시
+      const wrap15 = document.getElementById('ir-layer1_5-wrap');
+      if (lt.has_hour && lt.layer1_5) {
+        document.getElementById('ir-layer1_5').textContent = lt.layer1_5;
+        wrap15.style.display = 'block';
+      } else {
+        wrap15.style.display = 'none';
+      }
+
       document.getElementById('ir-layers').style.display = 'block';
       document.querySelectorAll('#ir-layers [data-jp]').forEach(el => {
         el.textContent = currentLang === 'ko' ? el.dataset.ko
