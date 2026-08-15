@@ -235,59 +235,81 @@ def gemini_narrate(model_data: dict, lang: str) -> dict:
     if brace > 0:
         raw = raw[brace:]
 
-    # 3. JSON 값 내부 큰따옴표 교정 (Gemini가 프롬프트 규칙 무시하는 경우 대응)
-    def sanitize_json_string_values(s: str) -> str:
-        """JSON 문자열 값 내부의 naked 큰따옴표를 「」로 교체"""
-        import re as _re2
-        # 문자열 값 안의 큰따옴표: ": "...값..." 패턴에서 값 내부만 처리
-        # 방법: 전체를 문자 단위로 순회하며 문자열 컨텍스트 추적
-        result = []
-        in_string = False
-        escape_next = False
-        key_or_value = False  # True=값 위치
+    # 3. JSON 파싱 — 강건한 다단계 시도
+    import re as _re2
 
+    def _extract_json_robust(s: str) -> dict:
+        """
+        Gemini 출력에서 JSON을 안정적으로 추출.
+        값 내부의 naked 따옴표를 상태 머신으로 교정 후 파싱.
+        """
+        # 방법 1: 그냥 파싱
+        try:
+            obj, _ = json.JSONDecoder().raw_decode(s)
+            return obj
+        except json.JSONDecodeError:
+            pass
+
+        # 방법 2: 상태 머신으로 값 내부 따옴표 교정
+        result = []
+        in_str = False
+        after_colon = False  # ": " 직후 = 값 위치
         i = 0
-        while i < len(s):
+        n = len(s)
+        while i < n:
             c = s[i]
-            if escape_next:
-                result.append(c)
-                escape_next = False
-            elif c == '\\' and in_string:
-                result.append(c)
-                escape_next = True
-            elif c == '"':
-                if not in_string:
-                    in_string = True
+            if in_str:
+                if c == '\\' and i + 1 < n:
                     result.append(c)
+                    result.append(s[i+1])
+                    i += 2
+                    continue
+                elif c == '"':
+                    # 다음 문자 확인: ,  }  ] 공백 이면 종료따옴표
+                    j = i + 1
+                    while j < n and s[j] in ' \t\r\n':
+                        j += 1
+                    if j < n and s[j] in ',}]':
+                        in_str = False
+                        result.append('"')
+                    else:
+                        # 값 내부 bare 따옴표 → 「」
+                        result.append('「')
                 else:
-                    in_string = False
                     result.append(c)
             else:
-                result.append(c)
+                if c == '"':
+                    in_str = True
+                    result.append('"')
+                else:
+                    result.append(c)
             i += 1
-        return ''.join(result)
+        fixed = ''.join(result)
+        try:
+            obj, _ = json.JSONDecoder().raw_decode(fixed)
+            return obj
+        except json.JSONDecodeError:
+            pass
 
-    # 3. 파싱 시도 → 실패 시 큰따옴표 교정 후 재시도
-    def try_parse(raw_str: str):
-        decoder = json.JSONDecoder()
-        obj, _ = decoder.raw_decode(raw_str)
-        return obj
+        # 방법 3: 키별 정규식 직접 추출 (가장 강건)
+        keys = ["headline", "primary_description", "balance_note",
+                "music_guidance", "resonance_type"]
+        obj = {}
+        for k in keys:
+            m = _re2.search(
+                rf'"{k}"\s*:\s*"(.*?)"(?=\s*[,}}])', s, _re2.DOTALL
+            )
+            if m:
+                obj[k] = m.group(1)
+        if obj:
+            return obj
+
+        raise ValueError(f"Gemini JSON parse failed | raw={s[:300]}")
 
     try:
-        obj = try_parse(raw)
-    except json.JSONDecodeError:
-        # 값 내부의 bare 큰따옴표를 일본어 괄호로 교체하는 정규식 방식
-        import re as _re2
-        # 패턴: JSON 키-값에서 값 문자열 안에 있는 큰따옴표만 교체
-        # 전략: ": "로 시작하는 문자열 값에서 종료 따옴표 전까지의 " 를 「」로
-        def fix_inner_quotes(m):
-            inner = m.group(1).replace('"', '「').replace('"', '」')
-            return ': "' + inner + '"'
-        fixed = _re2.sub(r':\s*"(.*?)"(?=\s*[,}])', fix_inner_quotes, raw, flags=_re2.DOTALL)
-        try:
-            obj = try_parse(fixed)
-        except json.JSONDecodeError as e:
-            raise ValueError(f"Gemini JSON parse error at char {e.pos}: {e.msg} | raw={raw[:300]}")
+        obj = _extract_json_robust(raw)
+    except ValueError as e:
+        raise ValueError(str(e))
 
     # 4. 일본어 후처리
     if lang == "jp":
