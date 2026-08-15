@@ -845,7 +845,7 @@
           : '';
         return `<div style="display:flex;align-items:center;gap:12px;">
           <span style="font-family:'Noto Serif JP',serif;color:${EL_COLOR[el]};width:20px;text-align:center">${EL_KANJI[el]}</span>
-          <div style="flex:1;height:4px;background:rgba(247,244,238,0.1);border-radius:2px;">
+          <div style="flex:1;height:4px;background:rgba(247,244,238,0.1);border-radius:2px;overflow:hidden;">
             <div style="height:4px;width:${Math.round(cnt/total*100)}%;background:${EL_COLOR[el]};border-radius:2px;transition:width 0.8s;"></div>
           </div>
           ${tag}
