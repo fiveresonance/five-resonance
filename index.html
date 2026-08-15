@@ -877,9 +877,9 @@
     const introEl = document.getElementById('ir-listen-intro');
     if (introEl && recommend.length > 0) {
       const introText = {
-        jp: `不足している${EL_KANJI[recommend[0]]}のエネルギーを音で補う`,
-        ko: `부족한 ${EL_KANJI[recommend[0]]} 에너지를 소리로 채우기`,
-        en: `Fill the missing ${recommend[0]} energy through sound`,
+        jp: `${EL_KANJI[recommend[0]]}のエネルギーを、音で満たしていく`,
+        ko: `${EL_KANJI[recommend[0]]} 에너지를 소리로 채워가기`,
+        en: `Filling the ${recommend[0]} energy through sound`,
       };
       introEl.textContent = '▸ ' + (introText[currentLang] || introText.jp);
     }
