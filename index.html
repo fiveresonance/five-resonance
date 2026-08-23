@@ -382,9 +382,21 @@
   <div id="result-name" class="result-name"></div>
   <div id="result-explain" class="result-explain"></div>
   <p id="result-desc" class="result-desc"></p>
-  <a id="result-yt" href="#" target="_blank" class="btn-primary" style="margin-bottom:40px;">Listen Now</a>
+  <a id="result-yt" href="#" target="_blank" class="btn-primary" style="margin-bottom:32px;">Listen Now</a>
 
-  <div class="result-secondary">
+  <!-- CITY RESONANCE (Soniq Vibes bridge) — 공명 듣기 버튼 바로 아래, 보조 공명보다 먼저 -->
+  <div class="city-picker-block" style="margin-bottom:48px;">
+    <p style="font-family:'Cormorant Garamond',serif;font-size:clamp(15px,2vw,19px);font-weight:300;font-style:italic;color:var(--ink);line-height:1.7;margin-bottom:24px;"
+       data-en="This may be the sound you need right now.<br>But separate from what you need, there can also be a sound you simply want today."
+       data-ko="지금 당신에게 필요한 건 이 소리일지도 모릅니다.<br>하지만 필요한 것과는 별개로, 오늘 기분으로 고르는 소리가 있어도 좋겠죠."
+       data-jp="今のあなたに必要なのは、この音かもしれません。<br>けれど、必要な音とは別に、今日の気分で選ぶ音があってもいい。">This may be the sound you need right now.<br>But separate from what you need, there can also be a sound you simply want today.</p>
+    <p style="font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:20px;"
+       data-en="Which city calls you today?" data-ko="오늘, 당신을 부르는 도시는 어디인가요?" data-jp="今日、あなたを呼んでいる街は？">Which city calls you today?</p>
+    <div id="city-picker-quiz" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;"></div>
+    <div id="city-picker-quiz-times" style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:14px;"></div>
+  </div>
+
+  <div class="result-secondary" style="border-top:1px solid var(--border);padding-top:40px;">
     <span class="section-label" data-en="Secondary Harmony" data-ko="보조 공명" data-jp="セカンダリー共鳴">Secondary Harmony</span>
     <div id="secondary-kanji" style="font-family:'Noto Serif JP',serif;font-size:36px;font-weight:300;margin:8px 0;"></div>
     <div id="secondary-name" style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;margin-bottom:16px;"></div>
@@ -394,6 +406,9 @@
   <div class="result-actions">
     <button class="btn-secondary" onclick="resetQuiz()" data-en="Try Again" data-ko="다시 하기" data-jp="もう一度">Try Again</button>
   </div>
+
+  <!-- TUNETYPE STUDIO (MBTI hint bridge — 준비되기 전까지 비활성) -->
+  <div id="mbti-hint-quiz" style="display:none;margin-top:32px;"></div>
 </div>
 
 <!-- FIVE ELEMENTS -->
@@ -493,6 +508,21 @@
         <div id="ir-listen-intro" style="font-size:11px;letter-spacing:0.1em;color:rgba(247,244,238,0.35);margin-bottom:10px;"></div>
         <!-- 음악 링크 버튼 -->
         <div id="ir-listen" style="display:flex;gap:10px;flex-wrap:wrap;"></div>
+
+        <!-- CITY RESONANCE (Soniq Vibes bridge) -->
+        <div style="margin-top:24px;padding-top:20px;border-top:1px solid rgba(247,244,238,0.08);">
+          <p style="font-family:'Cormorant Garamond',serif;font-size:14px;font-weight:300;font-style:italic;color:rgba(247,244,238,0.65);line-height:1.7;margin-bottom:16px;"
+             data-en="This may be the sound you need right now.<br>But separate from what you need, there can also be a sound you simply want today."
+             data-ko="지금 당신에게 필요한 건 이 소리일지도 모릅니다.<br>하지만 필요한 것과는 별개로, 오늘 기분으로 고르는 소리가 있어도 좋겠죠."
+             data-jp="今のあなたに必要なのは、この音かもしれません。<br>けれど、必要な音とは別に、今日の気分で選ぶ音があってもいい。">This may be the sound you need right now.<br>But separate from what you need, there can also be a sound you simply want today.</p>
+          <div style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(247,244,238,0.4);margin-bottom:14px;"
+            data-jp="今日、あなたを呼んでいる街は？" data-ko="오늘, 당신을 부르는 도시는 어디인가요?" data-en="Which city calls you today?">今日、あなたを呼んでいる街は？</div>
+          <div id="city-picker-innate" style="display:flex;gap:10px;flex-wrap:wrap;"></div>
+          <div id="city-picker-innate-times" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;"></div>
+        </div>
+
+        <!-- TUNETYPE STUDIO (MBTI hint bridge — 준비되기 전까지 비활성) -->
+        <div id="mbti-hint-innate" style="display:none;margin-top:20px;padding-top:20px;border-top:1px solid rgba(247,244,238,0.08);"></div>
       </div>
 
       <div style="border-top:1px solid rgba(247,244,238,0.08);margin:28px 0;"></div>
@@ -604,6 +634,12 @@
       const text = el.getAttribute('data-' + lang);
       if (text) el.innerHTML = text;
     });
+    if (document.getElementById('result-section') && document.getElementById('result-section').classList.contains('show')) {
+      renderCityPicker('city-picker-quiz', 'light');
+    }
+    if (document.getElementById('innate-result') && document.getElementById('innate-result').style.display === 'block') {
+      renderCityPicker('city-picker-innate', 'dark');
+    }
   }
 
   function scrollToQuiz() {
@@ -669,6 +705,100 @@
       yt:'https://youtu.be/yfe0Hhydv8E'
     }
   };
+
+  // ── SONIQ VIBES BRIDGE ─────────────────────────────────────────
+  // 도시 × 시간대 재생목록 링크. null = 아직 준비 안 됨(자동으로 "준비중" 처리).
+  // 링크가 생기면 여기 채워 넣으면 바로 사이트에 반영됨.
+  const SONIQ_VIBES_LINKS = {
+    tokyo:   { azure:'https://youtu.be/XjkZVw5o5x4', amber:'https://youtu.be/s_5Kqg89iq4', indigo:'https://youtu.be/a5na3KMNP1o', petrichor:null },
+    paris:   { azure:'https://youtu.be/GD6eQO96wYg', amber:'https://youtu.be/qtFmmSvwzCU', indigo:'https://youtu.be/VTTc0JSuOVo', petrichor:null },
+    seoul:   { azure:'https://youtu.be/37-gkUfAX7E', amber:'https://youtu.be/VoUE5N3cjPY', indigo:'https://youtu.be/SwDbZbJtD0A', petrichor:'https://youtu.be/9jpvxwQVfc8' },
+    newyork: { azure:'https://youtu.be/v37VpwJPqo8', amber:'https://youtu.be/ukySCDJizbs', indigo:'https://youtu.be/wBKa19RSHak', petrichor:'https://youtu.be/tSkqUeuFuDk' },
+    havana:  { azure:'https://youtu.be/bq1lQMgZNhQ', amber:null, indigo:null, petrichor:null }
+  };
+  const CITY_LABELS = {
+    tokyo:   { jp:'東京',       ko:'도쿄',   en:'Tokyo' },
+    paris:   { jp:'パリ',       ko:'파리',   en:'Paris' },
+    seoul:   { jp:'ソウル',     ko:'서울',   en:'Seoul' },
+    newyork: { jp:'ニューヨーク', ko:'뉴욕',   en:'New York' },
+    havana:  { jp:'ハバナ',     ko:'하바나', en:'Havana' }
+  };
+  const TIME_LABELS = {
+    azure:     { jp:'朝',   ko:'아침', en:'Morning' },
+    amber:     { jp:'黄昏', ko:'황혼', en:'Dusk' },
+    indigo:    { jp:'深夜', ko:'심야', en:'Midnight' },
+    petrichor: { jp:'雨',   ko:'비',   en:'Rain' }
+  };
+  const COMING_SOON = { jp:'準備中', ko:'준비중', en:'Coming soon' };
+
+  function renderCityPicker(pickerId, theme) {
+    const picker = document.getElementById(pickerId);
+    const timesWrap = document.getElementById(pickerId + '-times');
+    if (!picker || !timesWrap) return;
+    const isDark = theme === 'dark';
+    picker.innerHTML = '';
+    timesWrap.innerHTML = '';
+    Object.keys(SONIQ_VIBES_LINKS).forEach(function(city) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = (CITY_LABELS[city][currentLang] || CITY_LABELS[city].jp);
+      btn.style.cssText = isDark
+        ? 'border:1px solid rgba(247,244,238,0.25);background:transparent;color:rgba(247,244,238,0.8);padding:8px 16px;font-size:11px;letter-spacing:0.08em;cursor:pointer;transition:all 0.3s;'
+        : 'border:1px solid var(--border);background:transparent;color:var(--ink);padding:8px 16px;font-size:11px;letter-spacing:0.08em;cursor:pointer;transition:all 0.3s;';
+      btn.onmouseover = function(){ btn.style.borderColor = isDark ? 'rgba(247,244,238,0.6)' : 'var(--ink)'; };
+      btn.onmouseout  = function(){ btn.style.borderColor = isDark ? 'rgba(247,244,238,0.25)' : 'var(--border)'; };
+      btn.onclick = function(){ renderCityTimes(pickerId, city, isDark); };
+      picker.appendChild(btn);
+    });
+  }
+
+  function renderCityTimes(pickerId, city, isDark) {
+    const timesWrap = document.getElementById(pickerId + '-times');
+    timesWrap.innerHTML = '';
+    Object.keys(SONIQ_VIBES_LINKS[city]).forEach(function(time) {
+      const url = SONIQ_VIBES_LINKS[city][time];
+      const label = (TIME_LABELS[time][currentLang] || TIME_LABELS[time].jp);
+      const available = !!url && url.indexOf('REPLACE_WITH_') !== 0;
+      const el = document.createElement(available ? 'a' : 'span');
+      if (available) { el.href = url; el.target = '_blank'; }
+      el.textContent = available ? label : (label + ' · ' + (COMING_SOON[currentLang] || COMING_SOON.jp));
+      const baseColor = isDark ? 'rgba(247,244,238,0.85)' : 'var(--ink)';
+      const dimColor  = isDark ? 'rgba(247,244,238,0.25)' : 'rgba(13,13,13,0.25)';
+      el.style.cssText = 'font-size:11px;letter-spacing:0.05em;padding:6px 12px;border:1px solid ' +
+        (available ? (isDark ? 'rgba(201,169,110,0.4)' : 'var(--gold)') : (isDark ? 'rgba(247,244,238,0.1)' : 'rgba(13,13,13,0.08)')) +
+        ';color:' + (available ? baseColor : dimColor) + ';text-decoration:none;cursor:' + (available ? 'pointer' : 'default') + ';';
+      timesWrap.appendChild(el);
+    });
+  }
+  // ── END SONIQ VIBES BRIDGE ────────────────────────────────────
+
+  // ── TUNETYPE STUDIO BRIDGE (MBTI hint) ─────────────────────────
+  // 캐릭터/재생목록이 공개 준비되면 TUNETYPE_ENABLED를 true로 바꾸고
+  // TUNETYPE_URL과 아래 매핑(특히 wood/earth)을 채우면 자동으로 노출됨.
+  // 그 전까지는 완전히 숨김 처리되어 방문자에게 보이지 않음.
+  const TUNETYPE_ENABLED = false;
+  const TUNETYPE_URL = 'REPLACE_WITH_TUNETYPE_CHANNEL_OR_PLAYLIST_URL';
+  const TUNETYPE_MBTI_HINT = {
+    metal: { types:'INTJ / ISTJ', jp:'金の傾向は、INTJ・ISTJタイプに近いかもしれません', ko:'금(金) 성향은 INTJ·ISTJ 유형에 가까울 수 있어요', en:'Metal energy may lean toward INTJ / ISTJ types' },
+    fire:  { types:'ENFP / ESFP', jp:'火の傾向は、ENFP・ESFPタイプに近いかもしれません', ko:'화(火) 성향은 ENFP·ESFP 유형에 가까울 수 있어요', en:'Fire energy may lean toward ENFP / ESFP types' },
+    water: { types:'INFP / INFJ', jp:'水の傾向は、INFP・INFJタイプに近いかもしれません', ko:'수(水) 성향은 INFP·INFJ 유형에 가까울 수 있어요', en:'Water energy may lean toward INFP / INFJ types' },
+    wood:  null, // TODO: 목(木) 성향 매핑 확정 필요
+    earth: null  // TODO: 토(土) 성향 매핑 확정 필요
+  };
+
+  function renderMbtiHint(containerId, topElement) {
+    if (!TUNETYPE_ENABLED) return;
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    const hint = TUNETYPE_MBTI_HINT[topElement];
+    if (!hint) { container.style.display = 'none'; return; }
+    const text = hint[currentLang] || hint.jp;
+    container.innerHTML =
+      '<div style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);opacity:0.7;margin-bottom:10px;">TuneType Studio</div>' +
+      '<a href="' + TUNETYPE_URL + '" target="_blank" style="font-size:12px;color:inherit;text-decoration:underline;">' + text + '</a>';
+    container.style.display = 'block';
+  }
+  // ── END TUNETYPE STUDIO BRIDGE ─────────────────────────────────
 
   // ── QUIZ
   function selectOpt(step, weights, btn) {
@@ -760,6 +890,8 @@
     _quizScores = Object.assign({}, scores);
     document.getElementById('result-section').classList.add('show');
     document.getElementById('result-section').scrollIntoView({ behavior:'smooth', block:'start' });
+    renderCityPicker('city-picker-quiz', 'light');
+    renderMbtiHint('mbti-hint-quiz', topKey);
   }
 
   // ── RESET
@@ -941,6 +1073,8 @@
 
     document.getElementById('innate-result').style.display = 'block';
     document.getElementById('innate-result').scrollIntoView({behavior:'smooth',block:'start'});
+    renderCityPicker('city-picker-innate', 'dark');
+    renderMbtiHint('mbti-hint-innate', recommend[0]);
     // sound_focus는 Python이 계산한 결과 사용 (JS 중복 계산 제거)
     if (d.sound_focus) renderHybrid(d.sound_focus);
     else if (_quizScores) renderHybrid(null, d.model_data.vector, _quizScores);
