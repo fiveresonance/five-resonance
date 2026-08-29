@@ -773,17 +773,17 @@
   // ── END SONIQ VIBES BRIDGE ────────────────────────────────────
 
   // ── TUNETYPE STUDIO BRIDGE (MBTI hint) ─────────────────────────
-  // 캐릭터/재생목록이 공개 준비되면 TUNETYPE_ENABLED를 true로 바꾸고
-  // TUNETYPE_URL과 아래 매핑(특히 wood/earth)을 채우면 자동으로 노출됨.
-  // 그 전까지는 완전히 숨김 처리되어 방문자에게 보이지 않음.
-  const TUNETYPE_ENABLED = false;
-  const TUNETYPE_URL = 'REPLACE_WITH_TUNETYPE_CHANNEL_OR_PLAYLIST_URL';
+  // TuneType Studio 캐릭터 매칭 퀴즈 페이지로 연결됨.
+  // 영상이 유튜브에 다 올라가고 퀴즈 쪽 CTA 버튼이 활성화되면
+  // 굳이 여기 수정할 건 없음 — 링크는 그대로 유지됨.
+  const TUNETYPE_ENABLED = true;
+  const TUNETYPE_URL = 'https://type.fiveresonance.com';
   const TUNETYPE_MBTI_HINT = {
     metal: { types:'INTJ / ISTJ', jp:'金の傾向は、INTJ・ISTJタイプに近いかもしれません', ko:'금(金) 성향은 INTJ·ISTJ 유형에 가까울 수 있어요', en:'Metal energy may lean toward INTJ / ISTJ types' },
     fire:  { types:'ENFP / ESFP', jp:'火の傾向は、ENFP・ESFPタイプに近いかもしれません', ko:'화(火) 성향은 ENFP·ESFP 유형에 가까울 수 있어요', en:'Fire energy may lean toward ENFP / ESFP types' },
     water: { types:'INFP / INFJ', jp:'水の傾向は、INFP・INFJタイプに近いかもしれません', ko:'수(水) 성향은 INFP·INFJ 유형에 가까울 수 있어요', en:'Water energy may lean toward INFP / INFJ types' },
-    wood:  null, // TODO: 목(木) 성향 매핑 확정 필요
-    earth: null  // TODO: 토(土) 성향 매핑 확정 필요
+    wood:  { types:'ENTJ / ESTJ', jp:'木の傾向は、ENTJ・ESTJタイプに近いかもしれません', ko:'목(木) 성향은 ENTJ·ESTJ 유형에 가까울 수 있어요', en:'Wood energy may lean toward ENTJ / ESTJ types' },
+    earth: { types:'ISFJ / ESFJ', jp:'土の傾向は、ISFJ・ESFJタイプに近いかもしれません', ko:'토(土) 성향은 ISFJ·ESFJ 유형에 가까울 수 있어요', en:'Earth energy may lean toward ISFJ / ESFJ types' }
   };
 
   function renderMbtiHint(containerId, topElement) {
