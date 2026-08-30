@@ -772,30 +772,37 @@
   }
   // ── END SONIQ VIBES BRIDGE ────────────────────────────────────
 
-  // ── TUNETYPE STUDIO BRIDGE (MBTI hint) ─────────────────────────
-  // TuneType Studio 캐릭터 매칭 퀴즈 페이지로 연결됨.
-  // 영상이 유튜브에 다 올라가고 퀴즈 쪽 CTA 버튼이 활성화되면
-  // 굳이 여기 수정할 건 없음 — 링크는 그대로 유지됨.
+  // ── TUNETYPE STUDIO BRIDGE (element → Type, ネタバレなし誘導) ─────
+  // 五行の結果からTuneType Studioの16タイプ診断へ ?from=<element> 付きで送る。
+  // ここではMBTIコードをあらかじめ見せない(結果ページでキャラクターに
+  // 出会う驚きを弱めないため)。element↔Typeの対応自体はブランド独自の
+  // 解釈であり、末尾の注記でもその旨を明示している。
   const TUNETYPE_ENABLED = true;
   const TUNETYPE_URL = 'https://type.fiveresonance.com';
-  const TUNETYPE_MBTI_HINT = {
-    metal: { types:'INTJ / ISTJ', jp:'金の傾向は、INTJ・ISTJタイプに近いかもしれません', ko:'금(金) 성향은 INTJ·ISTJ 유형에 가까울 수 있어요', en:'Metal energy may lean toward INTJ / ISTJ types' },
-    fire:  { types:'ENFP / ESFP', jp:'火の傾向は、ENFP・ESFPタイプに近いかもしれません', ko:'화(火) 성향은 ENFP·ESFP 유형에 가까울 수 있어요', en:'Fire energy may lean toward ENFP / ESFP types' },
-    water: { types:'INFP / INFJ', jp:'水の傾向は、INFP・INFJタイプに近いかもしれません', ko:'수(水) 성향은 INFP·INFJ 유형에 가까울 수 있어요', en:'Water energy may lean toward INFP / INFJ types' },
-    wood:  { types:'ENTJ / ESTJ', jp:'木の傾向は、ENTJ・ESTJタイプに近いかもしれません', ko:'목(木) 성향은 ENTJ·ESTJ 유형에 가까울 수 있어요', en:'Wood energy may lean toward ENTJ / ESTJ types' },
-    earth: { types:'ISFJ / ESFJ', jp:'土の傾向は、ISFJ・ESFJタイプに近いかもしれません', ko:'토(土) 성향은 ISFJ·ESFJ 유형에 가까울 수 있어요', en:'Earth energy may lean toward ISFJ / ESFJ types' }
-  };
 
   function renderMbtiHint(containerId, topElement) {
     if (!TUNETYPE_ENABLED) return;
     const container = document.getElementById(containerId);
     if (!container) return;
-    const hint = TUNETYPE_MBTI_HINT[topElement];
-    if (!hint) { container.style.display = 'none'; return; }
-    const text = hint[currentLang] || hint.jp;
+    const d = elementData[topElement];
+    if (!d) { container.style.display = 'none'; return; }
+    const copy = {
+      jp: d.kanji + 'のあなた。あなたのTypeを見つけてみませんか?',
+      ko: d.kanji + '의 기운을 지닌 당신, 당신의 Type을 찾아보세요',
+      en: 'The ' + topElement.charAt(0).toUpperCase() + topElement.slice(1) + ' in you. Find your Type →'
+    };
+    const note = {
+      jp: '※ 五行とTypeの対応はFive Resonance独自の解釈です',
+      ko: '※ 오행과 Type의 연결은 Five Resonance만의 독자적인 해석입니다',
+      en: "※ The element–Type connection is Five Resonance's own original interpretation"
+    };
+    const text = copy[currentLang] || copy.jp;
+    const noteText = note[currentLang] || note.jp;
+    const url = TUNETYPE_URL + '?from=' + encodeURIComponent(topElement);
     container.innerHTML =
       '<div style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);opacity:0.7;margin-bottom:10px;">TuneType Studio</div>' +
-      '<a href="' + TUNETYPE_URL + '" target="_blank" style="font-size:12px;color:inherit;text-decoration:underline;">' + text + '</a>';
+      '<a href="' + url + '" target="_blank" style="font-size:13px;color:inherit;text-decoration:underline;">' + text + '</a>' +
+      '<div style="font-size:10px;color:var(--muted);opacity:0.6;margin-top:8px;">' + noteText + '</div>';
     container.style.display = 'block';
   }
   // ── END TUNETYPE STUDIO BRIDGE ─────────────────────────────────
@@ -1190,6 +1197,67 @@
     document.getElementById('compat-result').style.display = 'block';
     document.getElementById('compat-result').scrollIntoView({behavior:'smooth',block:'start'});
   }
+
+  // ── FIVE RESONANCE ⇄ TUNETYPE STUDIO ブリッジ (逆方向) ─────────
+  // https://fiveresonance.com/?type=ESFP のように来た場合、五行クイズを
+  // 省略していきなり対応する五行の結果を見せる。
+  // Type↔五行の対応は Five Resonance / TuneType Studio 独自の解釈であり、
+  // 公式MBTI理論上の対応関係ではない(下の注記でも明示している)。
+  const TYPE_TO_ELEMENT = {
+    INTJ:'metal', ISTP:'metal',
+    INTP:'wood',  ENTJ:'wood',  ENTP:'wood',
+    ENFP:'fire',  ESFP:'fire',  ESTP:'fire', ESFJ:'fire',
+    ISTJ:'earth', ESTJ:'earth', ISFJ:'earth', ENFJ:'earth',
+    INFJ:'water', INFP:'water', ISFP:'water',
+  };
+
+  function showResultFromType(typeCode) {
+    var el = TYPE_TO_ELEMENT[typeCode];
+    var d = el && elementData[el];
+    if (!d) return;
+    document.getElementById('quiz-section').style.display = 'none';
+    var lang = currentLang;
+
+    var circle = document.getElementById('result-circle');
+    circle.style.background = d.color + '22';
+    circle.style.border = '1px solid ' + d.color + '44';
+    circle.innerHTML = '<span style="font-size:48px">' + d.kanji + '</span>';
+
+    document.getElementById('result-kanji').style.color = d.color;
+    document.getElementById('result-kanji').textContent = d.kanji;
+    document.getElementById('result-name').textContent = lang==='jp' ? d.nameJp : lang==='ko' ? d.nameKo : d.nameEn;
+    document.getElementById('result-desc').textContent = lang==='jp' ? d.descJp : lang==='ko' ? d.descKo : d.descEn;
+    document.getElementById('result-yt').href = d.yt;
+    var listenLabels = { en:'Listen — ' + el.charAt(0).toUpperCase()+el.slice(1) + ' Resonance', ko:d.kanji+' 공명 듣기', jp:d.kanji+'の共鳴を聴く' };
+    document.getElementById('result-yt').textContent = listenLabels[lang] || listenLabels.en;
+
+    var introText = {
+      jp: '<strong>' + typeCode + '</strong> タイプのあなたへ、TuneType Studioから届いた共鳴です。',
+      ko: '<strong>' + typeCode + '</strong> 유형인 당신에게, TuneType Studio가 전하는 공명이에요.',
+      en: 'A resonance from TuneType Studio, for your <strong>' + typeCode + '</strong> type.'
+    };
+    var noteText = {
+      jp: '※ TypeとFive Resonanceの対応は、私たち独自の世界観による解釈です(公式MBTI理論ではありません)。',
+      ko: '※ Type과 Five Resonance의 연결은 저희만의 독자적인 해석 체계입니다 (공식 MBTI 이론이 아닙니다).',
+      en: '※ The Type–resonance connection is our own original interpretation, not official MBTI theory.'
+    };
+    document.getElementById('result-explain').innerHTML =
+      '<div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;">' + (introText[lang]||introText.en) + '</div>' +
+      '<div style="font-size:11px;color:var(--muted);line-height:1.8;">' + (noteText[lang]||noteText.en) + '</div>';
+
+    var secondary = document.querySelector('.result-secondary');
+    if (secondary) secondary.style.display = 'none';
+
+    document.getElementById('result-section').classList.add('show');
+    document.getElementById('result-section').scrollIntoView({ behavior:'smooth', block:'start' });
+    renderCityPicker('city-picker-quiz', 'light');
+  }
+
+  (function checkTypeParam(){
+    var params = new URLSearchParams(location.search);
+    var typeCode = (params.get('type') || '').toUpperCase();
+    if (TYPE_TO_ELEMENT[typeCode]) showResultFromType(typeCode);
+  })();
 </script>
 </body>
 </html>
